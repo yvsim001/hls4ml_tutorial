@@ -1,18 +1,70 @@
-# hls4ml_tutorial
+# hls4ml Tutorial – PYNQ-Z1 Board
 
-Das Gebiet des Machine Learnings hat in den letzten Jahren eine rasante Entwicklung erlebt.
-Gleichzeitig wächst der Bedarf, trainierte Modelle nicht nur in Software auszuführen, sondern direkt
-auf dedizierter Hardware – insbesondere FPGAs – zu betreiben, um Latenzen im
-Mikrosekundenbereich zu erreichen. Herkömmliche Werkzeuge bieten hierfür jedoch kaum
-automatisierte Unterstützung, sodass Ingenieure bislang den zeitaufwendigen Weg über manuelle
-Hardware-Beschreibungssprachen (HDL) oder manuelle HLS-Implementierungen gehen mussten.
-Das hls4ml-Framework (High Level Synthesis for Machine Learning) wurde entwickelt, um genau diese
-Lücke zu schließen. Es ermöglicht die automatisierte Übersetzung von in Python trainierten MLModellen (Keras, PyTorch, ONNX) in synthetisierbaren HLS-Code, der anschließend mit Vivado/Vitis
-HLS auf einem FPGA synthetisiert werden kann. Die Entstehung des Frameworks ist eng mit der
-Hochenergiephysik-Gemeinschaft am CERN Large Hadron Collider (LHC) [3] verbunden, wo EchtzeitTrigger Systeme mit geringen Latenzen benötigt werden, um relevante Kollisionsereignisse aus dem
-enormen Datenstrom herauszufiltern.
-Ziel dieser Projektarbeit ist es, das hls4ml-Framework zu erkunden, das offizielle Tutorial auf dem
-PYNQ-Z1-Board durchzuführen und die Ergebnisse zu dokumentieren. Der Bericht gliedert sich in einen
-Theorieteil, der die relevanten FPGA-Konzepte und Framework-Parameter erläutert, einen Praxisteil
-mit detaillierter Beschreibung jeder Tutorial-Einheit sowie eine Diskussion der aufgetretenen Hürden
-und einen Ausblick auf mögliche Weiterentwicklungen.
+> **Projektarbeit** | Fachhochschule Dortmund  
+> Betreuer: Michael Karagounis  
+> Autor: Yvan Simo
+
+---
+
+## Überblick
+
+Dieses Repository dokumentiert die praktische Durchführung des offiziellen **hls4ml**-Tutorials auf dem **PYNQ-Z1 FPGA-Board**. Es umfasst einen theoretischen Hintergrund zum Framework, eine schrittweise Anleitung jeder Tutorial-Einheit sowie eine Diskussion aufgetretener Hürden und möglicher Weiterentwicklungen.
+
+**hls4ml** (*High Level Synthesis for Machine Learning*) ist ein Open-Source-Framework, das die automatisierte Übersetzung von in Python trainierten ML-Modellen (Keras, PyTorch, ONNX) in synthetisierbaren HLS-Code ermöglicht – bereit zur Synthese mit Vivado/Vitis HLS auf einem FPGA.
+
+---
+
+## Motivation
+
+Das Gebiet des Machine Learnings hat in den letzten Jahren eine rasante Entwicklung erlebt. Gleichzeitig wächst der Bedarf, trainierte Modelle direkt auf dedizierter Hardware zu betreiben, um **Latenzen im Mikrosekundenbereich** zu erreichen – ein Bereich, in dem klassische Software-Inferenz an ihre Grenzen stößt.
+
+Bisherige Ansätze erforderten zeitaufwendige manuelle Implementierungen in Hardware-Beschreibungssprachen (HDL) oder manuelles HLS-Coding. hls4ml schließt diese Lücke durch **vollständige Automatisierung** des Übersetzungsprozesses.
+
+Das Framework wurde ursprünglich für Echtzeit-Triggersysteme am **CERN Large Hadron Collider (LHC)** entwickelt, wo extrem geringe Latenzen nötig sind, um relevante Kollisionsereignisse aus einem enormen Datenstrom herauszufiltern.
+
+---
+
+## Ziel der Projektarbeit
+
+- Das hls4ml-Framework erkunden und verstehen
+- Das offizielle Tutorial vollständig auf dem PYNQ-Z1-Board durchführen
+- Ergebnisse, Hürden und Erkenntnisse strukturiert dokumentieren
+
+---
+
+## Inhalt des Berichts
+
+| Abschnitt | Beschreibung |
+|---|---|
+| **Theorieteil** | FPGA-Konzepte, HLS-Grundlagen, Framework-Parameter |
+| **Praxisteil** | Detaillierte Beschreibung jeder Tutorial-Einheit |
+| **Diskussion** | Aufgetretene Probleme und Lösungsansätze |
+| **Ausblick** | Mögliche Weiterentwicklungen und Anwendungsfelder |
+
+---
+
+## Hardware & Software
+
+| Komponente | Version / Modell |
+|---|---|
+| FPGA-Board | PYNQ-Z1 |
+| Synthesetool | Vivado / Vitis HLS |
+| Framework | hls4ml |
+| ML-Backends | Keras, PyTorch, ONNX |
+| Betriebssystem | Ubuntu 24.04 |
+| Sprache | Python 3.x |
+
+---
+
+## Verwandte Ressourcen
+
+- [hls4ml Dokumentation](https://hls4ml.readthedocs.io)
+- [hls4ml GitHub Repository](https://github.com/fastmachinelearning/hls4ml)
+- [PYNQ-Z1 Board Dokumentation](https://pynq.readthedocs.io)
+- [CERN LHC Trigger Systems](https://home.cern/science/computing/trigger-and-data-acquisition)
+
+---
+
+## Lizenz
+
+Dieses Repository dient ausschließlich akademischen Zwecken im Rahmen einer Projektarbeit an der Fachhochschule Dortmund.
