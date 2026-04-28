@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HLS4ML — Guide Complet · Projektarbeit 1 · FH Dortmund</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4ef;--surface:#fff;--surface2:#f0efe9;--surface3:#e8e7e0;
+  --text:#1a1a18;--text2:#5a5a56;--text3:#9c9a92;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.18);
+  --purple:#534AB7;--purple-l:#EEEDFE;--purple-d:#3C3489;
+  --teal:#1D9E75;--teal-l:#E1F5EE;--teal-m:#5DCAA5;
+  --amber:#BA7517;--amber-l:#FAEEDA;
+  --red:#A32D2D;--red-l:#FCEBEB;
+  --blue:#185FA5;--blue-l:#E6F1FB;
+  --green:#3B6D11;--green-l:#EAF3DE;
+  --coral:#993C1D;--coral-l:#FAECE7;
+  --font:system-ui,'Segoe UI',sans-serif;
+  --mono:'Cascadia Code','Fira Code',Consolas,monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.7;display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:260px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:0;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0;scrollbar-width:thin}
+.sb-brand{padding:18px 20px 16px;border-bottom:1px solid var(--border);background:var(--purple);color:#fff}
+.sb-brand .chip{display:inline-block;background:rgba(255,255,255,0.2);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.08em;margin-bottom:8px;font-family:var(--mono)}
+.sb-brand h1{font-size:15px;font-weight:700;line-height:1.3;color:#fff}
+.sb-brand p{font-size:11px;color:rgba(255,255,255,0.65);margin-top:3px}
+.sb-section{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;padding:14px 20px 4px}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 20px;font-size:12px;color:var(--text2);cursor:pointer;border-left:3px solid transparent;transition:all .12s;text-decoration:none}
+.sb-item:hover{background:var(--surface2);color:var(--text)}
+.sb-item.active{color:var(--purple);border-left-color:var(--purple);background:var(--purple-l);font-weight:600}
+.sb-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:var(--teal)}
+.dot-warn{background:var(--amber)}
+.dot-bad{background:var(--red)}
+.dot-gray{background:var(--text3)}
+.dot-purple{background:var(--purple)}
+
+/* ── MAIN ── */
+.main{flex:1;max-width:860px;padding:40px 48px 80px}
+.section{display:none}
+.section.active{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TYPOGRAPHY ── */
+h2{font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text)}
+h3{font-size:16px;font-weight:700;margin:24px 0 8px;color:var(--text)}
+h4{font-size:13px;font-weight:700;margin:16px 0 6px;color:var(--text)}
+p{color:var(--text2);margin-bottom:12px;font-size:13px;line-height:1.75}
+.subtitle{color:var(--text3);font-size:13px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+strong{color:var(--text);font-weight:600}
+em{color:var(--purple-d)}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:16px}
+.card.purple{border-left:4px solid var(--purple)}
+.card.teal{border-left:4px solid var(--teal)}
+.card.amber{border-left:4px solid var(--amber)}
+.card.red{border-left:4px solid var(--red)}
+.card.blue{border-left:4px solid var(--blue)}
+.card.green{border-left:4px solid var(--green)}
+.card.coral{border-left:4px solid var(--coral)}
+.card-title{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)}
+
+/* ── CALLOUT ── */
+.box{border-radius:8px;padding:14px 16px;margin:12px 0;font-size:13px}
+.box p{margin:0;color:var(--text)}
+.box-t{font-weight:700;margin-bottom:5px}
+.box.teal{background:var(--teal-l);border-left:4px solid var(--teal)}
+.box.amber{background:var(--amber-l);border-left:4px solid var(--amber)}
+.box.red{background:var(--red-l);border-left:4px solid var(--red)}
+.box.blue{background:var(--blue-l);border-left:4px solid var(--blue)}
+.box.green{background:var(--green-l);border-left:4px solid var(--green)}
+.box.purple{background:var(--purple-l);border-left:4px solid var(--purple)}
+.box.coral{background:var(--coral-l);border-left:4px solid var(--coral)}
+
+/* ── CODE ── */
+pre{background:#1e1e2e;color:#cdd6f4;border-radius:8px;padding:16px;font-family:var(--mono);font-size:12px;line-height:1.8;overflow-x:auto;margin:10px 0 16px}
+code{font-family:var(--mono);font-size:11px;background:var(--surface2);padding:1px 6px;border-radius:3px;color:var(--purple-d)}
+.kw{color:#cba6f7}.fn{color:#89b4fa}.st{color:#a6e3a1}.cm{color:#6c7086;font-style:italic}.num{color:#fab387}
+
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:400px}
+th{font-weight:700;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:2px solid var(--border2);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;background:var(--surface2)}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}
+td.mono{font-family:var(--mono);font-size:11px;color:var(--text);font-weight:600}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+td.ok{color:var(--green);font-weight:700}
+td.warn{color:var(--amber);font-weight:700}
+td.bad{color:var(--red);font-weight:700}
+td.info{color:var(--blue);font-weight:600}
+
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:4px;font-weight:700;font-family:var(--mono)}
+.b-ok{background:var(--green-l);color:var(--green)}
+.b-warn{background:var(--amber-l);color:var(--amber)}
+.b-bad{background:var(--red-l);color:var(--red)}
+.b-info{background:var(--blue-l);color:var(--blue)}
+.b-purple{background:var(--purple-l);color:var(--purple)}
+.b-gray{background:var(--surface3);color:var(--text2)}
+
+/* ── METRICS GRID ── */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:12px 0 16px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.metric-val{font-size:20px;font-weight:700;font-family:var(--mono);margin-bottom:2px}
+.metric-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em}
+.metric.ok .metric-val{color:var(--green)}
+.metric.warn .metric-val{color:var(--amber)}
+.metric.bad .metric-val{color:var(--red)}
+.metric.info .metric-val{color:var(--blue)}
+.metric.purple .metric-val{color:var(--purple)}
+
+/* ── STEPS ── */
+.steps{margin:12px 0}
+.step{display:flex;gap:14px;margin-bottom:14px}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--purple-l);border:2px solid var(--purple);color:var(--purple);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body p{font-size:13px;margin-bottom:6px}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+
+/* ── PROGRESS BAR ── */
+.pbar-wrap{margin:6px 0}
+.pbar-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.pbar-label{width:80px;font-family:var(--mono);font-size:11px;color:var(--text2);flex-shrink:0;text-align:right}
+.pbar-track{flex:1;height:16px;background:var(--surface2);border-radius:4px;overflow:hidden;position:relative}
+.pbar-fill{height:100%;border-radius:4px;transition:width .4s ease;display:flex;align-items:center;padding-left:6px}
+.pbar-pct{font-size:10px;font-weight:700;color:#fff;white-space:nowrap}
+.pbar-limit{position:absolute;right:0;top:0;height:100%;width:2px;background:rgba(0,0,0,0.3)}
+.pbar-note{font-size:11px;color:var(--text3);width:60px;flex-shrink:0;text-align:right}
+
+/* ── PROFILING VISUAL ── */
+.prof-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px}
+.prof-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px}
+.prof-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.prof-lbl{width:72px;font-family:var(--mono);font-size:11px;color:var(--text2);text-align:right;flex-shrink:0}
+.prof-track{flex:1;height:22px;background:var(--surface2);border-radius:4px;position:relative}
+.p-grey{position:absolute;top:1px;height:20px;background:rgba(29,158,117,0.25);border:1px solid rgba(29,158,117,0.45);border-radius:3px}
+.p-seg{position:absolute;top:9px;height:4px;background:#888;border-radius:2px}
+.p-cap{position:absolute;top:6px;width:2px;height:10px;background:#777;border-radius:1px}
+.p-box{position:absolute;top:4px;height:14px;background:#378ADD;border:1.5px solid #185FA5;border-radius:3px}
+.p-med{position:absolute;top:4px;width:2px;height:14px;background:var(--text);border-radius:1px}
+.prof-axis{display:flex;padding-left:82px;margin-top:6px}
+.prof-axis span{flex:1;font-size:10px;color:var(--text3);font-family:var(--mono);text-align:center}
+
+/* ── FORMULA ── */
+.formula{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:12px 18px;margin:12px 0;font-family:var(--mono);font-size:13px;text-align:center;color:var(--purple-d);font-weight:600}
+
+/* ── COMPARISON ── */
+.compare-timeline{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.ct-row{display:flex;align-items:stretch;gap:12px}
+.ct-label{width:70px;flex-shrink:0;font-size:11px;font-weight:700;font-family:var(--mono);color:var(--text2);text-align:right;padding-top:6px}
+.ct-bar-wrap{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:4px}
+.ct-bar-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:4px}
+.ct-mini-row{display:flex;align-items:center;gap:8px}
+.ct-mini-label{font-size:10px;color:var(--text3);width:30px;flex-shrink:0}
+.ct-mini-track{flex:1;height:10px;background:var(--surface2);border-radius:3px;overflow:hidden;position:relative}
+.ct-mini-fill{height:100%;border-radius:3px}
+.ct-mini-val{font-size:10px;font-family:var(--mono);width:44px;text-align:right;flex-shrink:0}
+.ct-verdict{font-size:11px;margin-top:4px}
+
+/* ── ELEMENT CARDS (profiling) ── */
+.elem3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.e-card{border-radius:8px;padding:14px;border:1px solid}
+.e-seg{background:var(--blue-l);border-color:#b5d4f4}
+.e-box{background:var(--purple-l);border-color:#cecbf6}
+.e-grey{background:var(--teal-l);border-color:#9fe1cb}
+.e-title{font-size:12px;font-weight:700;margin-bottom:6px}
+.e-seg .e-title{color:var(--blue)}
+.e-box .e-title{color:var(--purple)}
+.e-grey .e-title{color:var(--teal)}
+.e-body{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* ── RF SLIDER ── */
+.slider-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px}
+input[type=range]{width:100%;cursor:pointer;accent-color:var(--purple);margin:4px 0}
+.rf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.rf-metric{background:var(--surface2);border-radius:8px;padding:10px;text-align:center}
+.rf-val{font-size:18px;font-weight:700;font-family:var(--mono)}
+.rf-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.rf-verdict{margin-top:10px;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:600}
+
+/* ── SEPARATOR ── */
+.sep{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+/* ── PAGE NAV ── */
+.page-nav{display:flex;justify-content:space-between;margin-top:36px;padding-top:20px;border-top:1px solid var(--border)}
+.nav-btn{padding:8px 18px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:13px;cursor:pointer;font-family:var(--font);transition:all .15s}
+.nav-btn:hover{background:var(--purple);color:#fff;border-color:var(--purple)}
+.nav-btn:disabled{opacity:0.3;cursor:not-allowed}
+
+/* ── HURDLE CARD ── */
+.hurdle{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;border-left:4px solid var(--coral)}
+
+@media(max-width:700px){
+  body{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:relative;min-height:auto}
+  .main{padding:20px 14px 60px}
+  .g2,.g3,.elem3{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div class="chip">HLS4ML · FH Dortmund</div>
+    <h1>Guide Complet</h1>
+    <p>Projektarbeit 1 · Simo Gueno Yvan Valder</p>
+  </div>
+
+  <div class="sb-section">Fondements</div>
+  <a class="sb-item active" onclick="go('intro')"><span class="dot dot-purple"></span>C'est quoi HLS4ML ?</a>
+  <a class="sb-item" onclick="go('fpga')"><span class="dot dot-gray"></span>FPGA & PYNQ-Z1</a>
+  <a class="sb-item" onclick="go('concepts')"><span class="dot dot-gray"></span>Concepts clés</a>
+  <a class="sb-item" onclick="go('workflow')"><span class="dot dot-gray"></span>Workflow complet</a>
+
+  <div class="sb-section">Théorie Approfondie (Ch. 2)</div>
+  <a class="sb-item" onclick="go('th-evolution')"><span class="dot dot-gray"></span>2.1.1 HDL → HLS → HLS4ML</a>
+  <a class="sb-item" onclick="go('th-fpga-arch')"><span class="dot dot-gray"></span>2.1.2 Architecture FPGA interne</a>
+  <a class="sb-item" onclick="go('th-parallel')"><span class="dot dot-purple"></span>2.2.1 Parallélisme & Pipeline</a>
+  <a class="sb-item" onclick="go('th-rf')"><span class="dot dot-purple"></span>2.2.2 ReuseFactor en détail</a>
+  <a class="sb-item" onclick="go('th-apfixed')"><span class="dot dot-purple"></span>2.2.3 Precision ap_fixed</a>
+  <a class="sb-item" onclick="go('th-pruning')"><span class="dot dot-purple"></span>2.2.5 Pruning & Sparsité</a>
+  <a class="sb-item" onclick="go('th-activ')"><span class="dot dot-purple"></span>Activations & BatchNorm</a>
+  <a class="sb-item" onclick="go('th-latii')"><span class="dot dot-purple"></span>2.2.6 Latency & II</a>
+  <a class="sb-item" onclick="go('th-gran')"><span class="dot dot-purple"></span>2.2.7 Granularité complète</a>
+  <a class="sb-item" onclick="go('th-env')"><span class="dot dot-gray"></span>2.3 Environnement & Setup</a>
+  <a class="sb-item" onclick="go('th-muls')"><span class="dot dot-purple"></span>Multiplications & DSPs</a>
+
+  <div class="sb-section">Le Profiling</div>
+  <a class="sb-item" onclick="go('prof-quoi')"><span class="dot dot-purple"></span>Pourquoi 4 graphiques ?</a>
+  <a class="sb-item" onclick="go('prof-3elem')"><span class="dot dot-purple"></span>Les 3 éléments</a>
+  <a class="sb-item" onclick="go('prof-lire')"><span class="dot dot-purple"></span>Comment lire</a>
+  <a class="sb-item" onclick="go('prof-tes')"><span class="dot dot-ok"></span>Tes résultats analysés</a>
+
+  <div class="sb-section">Tutoriels — Résultats réels</div>
+  <a class="sb-item" onclick="go('part1')"><span class="dot dot-bad"></span>Part 1 · Baseline</a>
+  <a class="sb-item" onclick="go('part2')"><span class="dot dot-bad"></span>Part 2 · Advanced config</a>
+  <a class="sb-item" onclick="go('part3')"><span class="dot dot-bad"></span>Part 3 · Pruning</a>
+  <a class="sb-item" onclick="go('part4')"><span class="dot dot-ok"></span>Part 4 · QKeras ✓ FIT</a>
+  <a class="sb-item" onclick="go('part41')"><span class="dot dot-warn"></span>Part 4.1 · HGQ</a>
+  <a class="sb-item" onclick="go('part5')"><span class="dot dot-ok"></span>Part 5 · BDT/Conifer</a>
+  <a class="sb-item" onclick="go('part6')"><span class="dot dot-bad"></span>Part 6 · CNN</a>
+  <a class="sb-item" onclick="go('part7')"><span class="dot dot-ok"></span>Part 7 · Déploiement PYNQ ✓</a>
+  <a class="sb-item" onclick="go('part8')"><span class="dot dot-gray"></span>Part 8 · Symbolic Regression</a>
+
+  <div class="sb-section">Résultats & Bilan</div>
+  <a class="sb-item" onclick="go('tableau')"><span class="dot dot-gray"></span>Tableau comparatif global</a>
+  <a class="sb-item" onclick="go('hurden')"><span class="dot dot-warn"></span>Problèmes rencontrés</a>
+  <a class="sb-item" onclick="go('fazit')"><span class="dot dot-ok"></span>Conclusion & Ausblick</a>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main">
+
+<!-- ══ INTRO ══ -->
+<section id="intro" class="section active">
+  <h2>C'est quoi HLS4ML ?</h2>
+  <p class="subtitle">High Level Synthesis for Machine Learning — le pont entre Python et le FPGA</p>
+
+  <p>Normalement, programmer un FPGA demande d'écrire du VHDL ou Verilog — des langages hardware très bas niveau. HLS (High Level Synthesis) permet déjà d'écrire en C/C++ et de le convertir automatiquement en RTL. <strong>HLS4ML va encore plus loin</strong> : tu lui donnes un réseau de neurones Keras/PyTorch, il génère tout le code HLS tout seul.</p>
+
+  <div class="g3">
+    <div class="card purple">
+      <div class="card-title">🧠 Étape 1 — Python</div>
+      <p>Tu entraînes ton réseau normalement avec Keras en float32. Le modèle tourne sur CPU/GPU.</p>
+    </div>
+    <div class="card teal">
+      <div class="card-title">⚙️ Étape 2 — HLS4ML</div>
+      <p>HLS4ML convertit le modèle en code C++ HLS optimisé pour FPGA. Aucune connaissance VHDL requise.</p>
+    </div>
+    <div class="card blue">
+      <div class="card-title">⚡ Étape 3 — FPGA</div>
+      <p>Vivado/Vitis synthétise le C++ en bitstream. Inférence en quelques <strong>nanosecondes</strong>.</p>
+    </div>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">Origine : CERN / LHC</div>
+    <p>HLS4ML a été créé par la communauté de physique des hautes énergies du CERN. Les détecteurs du Large Hadron Collider produisent des milliards de collisions par seconde — il faut trier les événements intéressants en temps réel, avec des latences inférieures à la microseconde. Impossible sur CPU. Le FPGA + HLS4ML résout exactement ce problème.</p>
+  </div>
+
+  <h3>Pourquoi le FPGA ne fait pas de virgule flottante ?</h3>
+  <p>Un CPU peut faire des calculs float32 facilement car il a des unités de calcul flottant dédiées (FPU). Sur un FPGA, <strong>tout est câblé manuellement</strong> en portes logiques. Implémenter float32 sur FPGA consommerait des ressources énormes. On utilise donc des <strong>nombres en virgule fixe</strong> : <code>ap_fixed&lt;N,I&gt;</code>.</p>
+
+  <div class="box amber">
+    <div class="box-t">Le défi principal de cette Projektarbeit</div>
+    <p>Trouver la bonne précision ap_fixed pour que le modèle tienne dans les <strong>220 DSPs</strong> du PYNQ-Z1, tout en maintenant une accuracy proche du modèle Keras original. Les Parts 1 à 3 échouent toutes. C'est seulement à partir de la Part 4 (QKeras) que ça rentre.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" disabled>← Précédent</button>
+    <button class="nav-btn" onclick="go('fpga')">Suivant : FPGA & PYNQ-Z1 →</button>
+  </div>
+</section>
+
+<!-- ══ FPGA ══ -->
+<section id="fpga" class="section">
+  <h2>FPGA & PYNQ-Z1</h2>
+  <p class="subtitle">Les ressources disponibles sur ton board — les limites à ne pas dépasser</p>
+
+  <p>Un FPGA est un circuit intégré composé de blocs logiques programmables. Il n'exécute pas d'instructions comme un CPU — il <strong>câble physiquement</strong> les opérations dans le silicium. Ce qui le rend ultra-rapide pour des calculs parallèles répétitifs comme l'inférence neurale.</p>
+
+  <div class="box blue">
+    <div class="box-t">PYNQ-Z1 vs PYNQ-Z2 — une subtilité importante</div>
+    <p>HLS4ML supporte officiellement le PYNQ-Z2, pas le PYNQ-Z1. Mais les deux utilisent le même chip Xilinx Zynq xc7z020clg400-1. Solution utilisée dans ta Projektarbeit : spécifier le <code>part='xc7z020clg400-1'</code> directement et ajouter manuellement les fichiers Board Definition du PYNQ-Z1 dans les frameworks.</p>
+  </div>
+
+  <h3>Ressources du Zynq-7020 (ton PYNQ-Z1)</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Ressource</th><th>Quantité</th><th>Rôle dans HLS4ML</th><th>Limite de sécurité (80%)</th></tr>
+    <tr><td class="mono">DSP48E1</td><td><strong>220</strong></td><td>Multiplications poids×activation — fait A×B+C avec A(25-bit) × B(18-bit). 1 DSP = 1 multiplication 16-bit simultanée.</td><td class="warn">≤ 176 DSPs</td></tr>
+    <tr><td class="mono">LUT</td><td><strong>53 200</strong></td><td>Implémentation de toute la logique (additions, activations, mux)</td><td class="warn">≤ 42 560 LUTs</td></tr>
+    <tr><td class="mono">Flip-Flop (FF)</td><td><strong>106 400</strong></td><td>Registres de pipeline — stockage intermédiaire entre cycles d'horloge</td><td class="warn">≤ 85 120 FFs</td></tr>
+    <tr><td class="mono">Block-RAM (36Kb)</td><td><strong>140</strong></td><td>Stockage des poids et activations volumineuses</td><td class="ok">≤ 112</td></tr>
+    <tr><td class="mono">LUT-RAM</td><td><strong>17 400</strong></td><td>Petits buffers locaux</td><td></td></tr>
+  </table>
+  </div>
+
+  <div class="box red">
+    <div class="box-t">⚠ Les DSPs sont la contrainte principale</div>
+    <p>Chaque multiplication dans un réseau dense nécessite des DSPs. Un réseau avec 480 multiplications en RF=1 a besoin de ~480 DSPs — plus du double de ce que le PYNQ-Z1 possède. C'est pour ça que les Parts 1, 2, 3 ne rentrent pas : il faut <strong>réduire les DSPs</strong> via le ReuseFactor ou la quantisation.</p>
+  </div>
+
+  <h3>Comment HLS4ML utilise ces ressources</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">DSPs ← multiplications</div>
+      <p>Chaque neurone d'une couche Dense fait des sommes de produits (poids × activation). Chaque produit = 1 DSP en RF=1. Formule : <code>DSPs = n_weights / RF</code></p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">LUTs ← logique</div>
+      <p>Additions, fonctions d'activation (ReLU, Softmax), multiplexeurs, contrôle de pipeline. Les LUTs augmentent avec la complexité architecturale.</p>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('intro')">← Introduction</button>
+    <button class="nav-btn" onclick="go('concepts')">Suivant : Concepts clés →</button>
+  </div>
+</section>
+
+<!-- ══ CONCEPTS ══ -->
+<section id="concepts" class="section">
+  <h2>Concepts clés de HLS4ML</h2>
+  <p class="subtitle">Les 7 paramètres qui contrôlent performance, précision et ressources</p>
+
+  <h3>① ap_fixed&lt;N,I&gt; — La virgule fixe</h3>
+  <p>Sur FPGA, on ne peut pas utiliser float32. On représente les nombres avec un type à virgule fixe qui a <strong>exactement N bits</strong>, dont I pour la partie entière.</p>
+
+  <div class="formula">ap_fixed&lt;N, I&gt; → plage : [−2^(I−1), +2^(I−1) − ε] · résolution : 2^(−(N−I))</div>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Type</th><th>Plage max</th><th>Résolution</th><th>Usage typique</th></tr>
+    <tr><td class="mono">ap_fixed&lt;16,6&gt;</td><td>±32</td><td>2⁻¹⁰ ≈ 0.001</td><td>Défaut HLS4ML — conservatif</td></tr>
+    <tr><td class="mono">ap_fixed&lt;8,1&gt;</td><td>±1</td><td>2⁻⁷ ≈ 0.008</td><td>Poids dont le max est 0.5</td></tr>
+    <tr><td class="mono">ap_fixed&lt;12,3&gt;</td><td>±8</td><td>2⁻⁹ ≈ 0.002</td><td>Activations montant jusqu'à 4</td></tr>
+    <tr><td class="mono">ap_fixed&lt;6,1&gt;</td><td>±1</td><td>2⁻⁵ ≈ 0.03</td><td>QKeras agressif</td></tr>
+  </table>
+  </div>
+
+  <div class="box amber">
+    <div class="box-t">Le danger : overflow si I est trop petit</div>
+    <p>Si une valeur de 3.5 arrive dans un type ap_fixed&lt;8,2&gt; (I=2, plage max = ±2), elle est tronquée ou wrappée → résultat faux. Le profiling sert à éviter exactement ça : vérifier que I est assez grand pour couvrir les valeurs réelles du modèle.</p>
+  </div>
+
+  <hr class="sep">
+  <h3>② ReuseFactor (RF) — Latence vs Ressources</h3>
+  <p>Le RF détermine combien de fois un même multiplicateur hardware est réutilisé pour différents poids. RF=1 = un multiplicateur par poids = maximum parallèle. RF=N = un multiplicateur partagé entre N poids = minimum de DSPs mais latence N fois plus grande.</p>
+
+  <div class="formula">DSPs nécessaires = nombre_multiplications ÷ ReuseFactor</div>
+
+  <div class="slider-wrap">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <label style="font-size:13px;color:var(--text2);min-width:110px">ReuseFactor</label>
+      <input type="range" min="1" max="64" value="1" id="rf" oninput="calcRF()">
+      <span id="rf-v" style="font-family:var(--mono);font-weight:700;font-size:16px;color:var(--purple);min-width:32px">1</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <label style="font-size:13px;color:var(--text2);min-width:110px">Multiplications réseau</label>
+      <input type="range" min="100" max="2200" value="480" id="muls" step="50" oninput="calcRF()">
+      <span id="mul-v" style="font-size:12px;color:var(--text2);min-width:50px">480</span>
+    </div>
+    <div class="rf-grid">
+      <div class="rf-metric"><div class="rf-val" id="rf-dsp">480</div><div class="rf-lbl">DSPs utilisés</div></div>
+      <div class="rf-metric"><div class="rf-val" id="rf-pct">218%</div><div class="rf-lbl">% des 220 DSPs</div></div>
+      <div class="rf-metric"><div class="rf-val" id="rf-lat">1×</div><div class="rf-lbl">Cycles de latence</div></div>
+    </div>
+    <div id="rf-verdict" class="rf-verdict"></div>
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>ReuseFactor</th><th>DSP (relatif)</th><th>Latency</th><th>II (Initiation Interval)</th></tr>
+    <tr><td>RF = 1</td><td class="bad">Maximum</td><td class="ok">Minimal</td><td class="ok">1 cycle</td></tr>
+    <tr><td>RF = N</td><td class="ok">Minimum</td><td class="bad">Maximum</td><td class="warn">N cycles</td></tr>
+    <tr><td>RF = 64 (Part 7)</td><td class="ok">4% DSPs</td><td class="warn">93 cycles = 465 ns</td><td>94 cycles</td></tr>
+  </table>
+  </div>
+
+  <hr class="sep">
+  <h3>③ Granularité de la configuration</h3>
+  <div class="g3">
+    <div class="card blue">
+      <div class="card-title">'model'</div>
+      <p>Une seule précision pour tout le réseau. Simple. Utilisé en Part 1 et Part 3. Pas de contrôle fin.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">'name' ← recommandé</div>
+      <p>Précision couche par couche. HLS4ML calcule automatiquement les accumulateurs. Utilisé en Parts 2, 4, 4.1.</p>
+    </div>
+    <div class="card teal">
+      <div class="card-title">HGQ (Part 4.1)</div>
+      <p>Quantisation par poids individuel. Le plus fin possible. Nécessite un Proxy Model intermédiaire.</p>
+    </div>
+  </div>
+
+  <hr class="sep">
+  <h3>④ Profiling et Trace</h3>
+  <p>Le profiling analyse les distributions réelles des poids et activations et affiche des box plots avec des zones grises montrant ce que ap_fixed peut représenter. Le Trace compare les sorties couche par couche entre Keras et HLS pour détecter les erreurs de quantisation. <strong>→ Voir section "Le Profiling" pour tous les détails</strong></p>
+
+  <hr class="sep">
+  <h3>⑤ Pruning et Sparsité</h3>
+  <p>Pruning = mettre délibérément des poids à zéro pendant l'entraînement. Si un poids est zéro, la multiplication correspondante est nulle → le DSP peut être ignoré. HLS4ML exploite cette sparsité quand le RF est un multiple du pattern de sparsité.</p>
+  <div class="box purple">
+    <div class="box-t">Magnitude Pruning avec TensorFlow Model Optimization Toolkit</div>
+    <p>Les plus petits poids en valeur absolue sont progressivement mis à zéro pendant l'entraînement. Part 3 : 50% de sparsité → ~2× moins de DSPs théoriquement. Part 4 : 75% de sparsité combiné avec QKeras → résultats bien meilleurs.</p>
+  </div>
+
+  <hr class="sep">
+  <h3>⑥ Latency et Initiation Interval (II)</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">Latency</div>
+      <p>Nombre de cycles d'horloge entre l'entrée d'un sample et la sortie du résultat. Sur PYNQ-Z1 à 200MHz : <strong>50 cycles = 0.250 µs</strong>.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">Initiation Interval (II)</div>
+      <p>Combien de cycles avant de pouvoir accepter un nouveau sample. Si II=1 (pipelining complet), le débit est maximal. Si RF>1, II=RF.</p>
+    </div>
+  </div>
+
+  <hr class="sep">
+  <h3>⑦ QKeras — Quantisation pendant l'entraînement</h3>
+  <p>Au lieu de quantiser un modèle déjà entraîné (post-training quantization), QKeras intègre la quantisation <strong>dans la boucle d'entraînement</strong>. Le réseau apprend à être précis malgré les contraintes de bits. Résultat : pour le même nombre de bits, QKeras donne une meilleure accuracy que la quantisation post-training.</p>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('fpga')">← FPGA & PYNQ-Z1</button>
+    <button class="nav-btn" onclick="go('workflow')">Suivant : Workflow →</button>
+  </div>
+</section>
+
+<!-- ══ WORKFLOW ══ -->
+<section id="workflow" class="section">
+  <h2>Le Workflow complet</h2>
+  <p class="subtitle">De l'entraînement Keras jusqu'au bitstream sur PYNQ-Z1 — 6 étapes</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <p><strong>Entraîner le modèle Keras (Part 1)</strong></p>
+        <p>Réseau dense fc1→relu1→fc2→relu2→fc3→relu3→output→softmax, dataset Jet Tagging du LHC. Accuracy baseline ≈ 0.7604.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <p><strong>Créer la configuration HLS4ML</strong></p>
+        <pre><span class="kw">import</span> hls4ml
+config = hls4ml.utils.<span class="fn">config_from_keras_model</span>(model, granularity=<span class="st">'name'</span>)
+<span class="cm"># Défaut : ap_fixed&lt;16,6&gt; pour tout + accumulateurs automatiques</span>
+<span class="kw">for</span> layer <span class="kw">in</span> config[<span class="st">'LayerName'</span>].keys():
+    config[<span class="st">'LayerName'</span>][layer][<span class="st">'Trace'</span>] = <span class="kw">True</span>  <span class="cm"># activer le trace</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <p><strong>Convertir en hls_model</strong></p>
+        <pre>hls_model = hls4ml.converters.<span class="fn">convert_from_keras_model</span>(
+    model, hls_config=config,
+    output_dir=<span class="st">'model_1/hls4ml_prj'</span>,
+    part=<span class="st">'xc7z020clg400-1'</span>   <span class="cm"># PYNQ-Z1</span>
+)</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <p><strong>Profiler et ajuster la précision</strong></p>
+        <pre><span class="kw">from</span> hls4ml.model.profiling <span class="kw">import</span> numerical
+numerical(model=model, hls_model=hls_model, X=X_test[:<span class="num">1000</span>])
+<span class="cm"># → 4 graphiques. Vérifier que les zones grises couvrent les caps droits</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <p><strong>Compiler et vérifier l'accuracy</strong></p>
+        <pre>hls_model.<span class="fn">compile</span>()
+y_hls = hls_model.<span class="fn">predict</span>(X_test)
+<span class="cm"># Comparer accuracy avec le modèle Keras</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <p><strong>Synthèse et déploiement PYNQ (Part 7)</strong></p>
+        <pre>hls_model = hls4ml.converters.<span class="fn">convert_from_keras_model</span>(
+    model, backend=<span class="st">'VivadoAccelerator'</span>,
+    board=<span class="st">'pynq-z2'</span>,   <span class="cm"># même chip que PYNQ-Z1</span>
+    hls_config=config
+)
+hls_model.<span class="fn">build</span>(csim=<span class="kw">True</span>, synth=<span class="kw">True</span>)
+<span class="cm"># → génère le bitstream (.bit) + hardware description (.hwh)</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="box purple">
+    <div class="box-t">Pourquoi configurer AVANT de convertir ?</div>
+    <p>La configuration (précision, ReuseFactor) est injectée dans le code C++ HLS généré. Une fois la conversion faite, il faut tout reconvertir pour changer la config. C'est pourquoi on profile d'abord, on ajuste, puis seulement on synthétise avec Vivado — qui prend des heures.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('concepts')">← Concepts clés</button>
+    <button class="nav-btn" onclick="go('prof-quoi')">Suivant : Le Profiling →</button>
+  </div>
+</section>
+
+<!-- ══ TH: EVOLUTION ══ -->
+<section id="th-evolution" class="section">
+  <h2>2.1.1 — Évolution du Design FPGA : HDL → HLS → HLS4ML</h2>
+  <p class="subtitle">Comprendre pourquoi HLS4ML existe — le contexte historique et technique</p>
+
+  <h3>Niveau 1 — HDL (Hardware Description Language)</h3>
+  <p>Historiquement, programmer un FPGA signifie écrire du <strong>VHDL ou Verilog</strong>. Ces langages décrivent le matériel au niveau RTL (Register Transfer Level) : tu décris exactement quels registres échangent quelles données à chaque coup d'horloge. C'est extrêmement précis mais aussi extrêmement long — implémenter un simple MLP à 3 couches en VHDL peut prendre des semaines.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Aspect</th><th>VHDL / Verilog</th><th>HLS (C/C++)</th><th>HLS4ML (Python)</th></tr>
+    <tr><td>Niveau d'abstraction</td><td>RTL — registres et horloges</td><td>Algorithme — fonctions C++</td><td>Modèle ML — Keras/PyTorch</td></tr>
+    <tr><td>Expertise requise</td><td class="bad">Hardware expert</td><td class="warn">Ingénieur software+HW</td><td class="ok">Data scientist Python</td></tr>
+    <tr><td>Temps de développement</td><td class="bad">Semaines / mois</td><td class="warn">Jours / semaines</td><td class="ok">Minutes / heures</td></tr>
+    <tr><td>Contrôle sur l'implémentation</td><td class="ok">Total</td><td class="warn">Partiel (pragmas)</td><td class="bad">Limité (config JSON)</td></tr>
+    <tr><td>Optimisation automatique</td><td class="bad">Manuelle</td><td class="warn">Partielle</td><td class="ok">Largement automatique</td></tr>
+  </table>
+  </div>
+
+  <h3>Niveau 2 — HLS (High Level Synthesis)</h3>
+  <p>HLS permet d'écrire le comportement du circuit en <strong>C ou C++</strong>, puis de laisser l'outil (Vivado HLS ou Vitis HLS chez Xilinx/AMD) générer le RTL automatiquement. Tu contrôles l'implémentation via des <strong>pragmas HLS</strong> insérés dans le code :</p>
+
+  <pre><span class="cm">// Exemple de pragma HLS dans du code C++</span>
+<span class="kw">void</span> <span class="fn">dense_layer</span>(<span class="kw">float</span> inputs[], <span class="kw">float</span> outputs[]) {
+  <span class="cm">#pragma HLS PIPELINE II=1    // pipeline complet</span>
+  <span class="cm">#pragma HLS UNROLL factor=4  // dérouler 4× la boucle</span>
+  <span class="kw">for</span>(<span class="kw">int</span> i = <span class="num">0</span>; i &lt; N; i++) {
+    outputs[i] = <span class="fn">activation</span>(<span class="fn">dot_product</span>(weights[i], inputs));
+  }
+}</pre>
+
+  <h3>Niveau 3 — HLS4ML (Python → HLS → RTL → Bitstream)</h3>
+  <p>HLS4ML ajoute une couche supplémentaire : il prend directement un modèle Keras/PyTorch et génère le code C++ HLS correspondant, avec les types ap_fixed, les pragmas de pipeline, et les connexions entre couches — <strong>tout automatiquement</strong>. Le développeur contrôle seulement la configuration (précision, ReuseFactor, granularité).</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-body"><p><strong>Keras Model</strong> → hls4ml parse les couches, poids, et activations</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-body"><p><strong>Code C++ HLS généré</strong> → avec ap_fixed, #pragma HLS PIPELINE, réorganisation des couches (ex: fusion BatchNorm)</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-body"><p><strong>Vivado/Vitis HLS</strong> → synthèse du C++ en RTL (VHDL/Verilog automatique)</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">④</div>
+      <div class="step-body"><p><strong>Vivado Implementation</strong> → placement et routage sur le FPGA physique → bitstream .bit</p></div>
+    </div>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">Origine CERN — pourquoi HLS4ML a été créé</div>
+    <p>Au LHC (Large Hadron Collider) au CERN, les détecteurs produisent des données à des débits de plusieurs Tb/s. Le trigger de niveau 1 doit décider en <strong>moins de 25 µs</strong> si une collision est intéressante, avant de la stocker. Implémenter ce tri en VHDL pour des réseaux neuronaux prendrait des mois de développement et serait non-réutilisable. HLS4ML permet de changer le modèle de classification en quelques heures plutôt que plusieurs mois. [Référence : Duarte et al., JINST 13, P07027 (2018)]</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('workflow')">← Workflow</button>
+    <button class="nav-btn" onclick="go('th-fpga-arch')">Suivant : Architecture FPGA →</button>
+  </div>
+</section>
+
+<!-- ══ TH: FPGA ARCH ══ -->
+<section id="th-fpga-arch" class="section">
+  <h2>2.1.2 — Architecture interne du FPGA</h2>
+  <p class="subtitle">Comprendre ce que sont réellement les LUTs, DSPs, FFs et BRAMs</p>
+
+  <h3>La structure fondamentale</h3>
+  <p>Un FPGA est une grille de blocs logiques programmables interconnectés par un réseau de câbles configurables. Contrairement à un CPU qui exécute des instructions séquentiellement, le FPGA <strong>câble physiquement</strong> les opérations — il n'y a pas de fetch/decode/execute. Tout est du matériel parallèle.</p>
+
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">LUT — Look-Up Table</div>
+      <p>Le bloc de base du FPGA. Une LUT à 6 entrées est essentiellement une petite ROM de 64 bits : pour chaque combinaison de 6 inputs, elle retourne 1 bit de sortie. En programmant cette ROM, on peut implémenter <strong>n'importe quelle fonction logique à 6 variables</strong>. Les additions, comparaisons, et même des portions d'activations sont implementées en LUTs. Sur le Zynq-7020 : <strong>53 200 LUTs</strong>.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">DSP48E1 — Digital Signal Processor</div>
+      <p>Un bloc DSP est un multiplieur-accumulateur hardware optimisé. Il fait <code>P = A×B + C</code> en un seul cycle d'horloge, avec A sur <strong>25 bits</strong> et B sur <strong>18 bits</strong>. Une multiplication 16-bit × 16-bit tient dans <strong>1 seul DSP</strong> car 16 &lt; 25 et 16 &lt; 18. C'est le bloc utilisé pour les multiplications des poids dans les couches Dense. Sur le Zynq-7020 : <strong>220 DSPs</strong> = 220 multiplications 16-bit <em>simultanées</em> par cycle d'horloge — la contrainte principale de tout le tutoriel.</p>
+    </div>
+    <div class="card teal">
+      <div class="card-title">Flip-Flop (FF) — Registre</div>
+      <p>Un FF stocke 1 bit d'état, synchronisé sur l'horloge. Les FFs sont utilisés comme <strong>registres de pipeline</strong> : ils mémorisent les résultats intermédiaires entre étages de pipeline. Sur le Zynq-7020 : <strong>106 400 FFs</strong> (= 53 200 paires de LUT-FF dans les slices).</p>
+    </div>
+    <div class="card green">
+      <div class="card-title">Block-RAM (BRAM)</div>
+      <p>Des blocs de mémoire SRAM configurables (36 Kb chacun). Utilisés pour stocker les <strong>poids volumineux ou les buffers d'activation</strong> qui ne rentrent pas dans les LUTs. Sur le Zynq-7020 : <strong>140 BRAMs de 36 Kb</strong> = 5 Mb total.</p>
+    </div>
+  </div>
+
+  <h3>Comment hls4ml utilise ces ressources</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Opération NN</th><th>Ressource principale</th><th>Ressource secondaire</th><th>Impact précision</th></tr>
+    <tr><td>Multiplication poids × activation</td><td>DSP48E1</td><td>LUT (si petits bits)</td><td>N bits → moins de DSPs</td></tr>
+    <tr><td>Addition / accumulation</td><td>LUT + FF</td><td>DSP (parfois)</td><td>I bits → taille adder</td></tr>
+    <tr><td>Activation ReLU</td><td>LUT (comparateur)</td><td>—</td><td>Minimal</td></tr>
+    <tr><td>Activation Softmax</td><td>LUT (complex)</td><td>DSP (divisions)</td><td>Précision résultat</td></tr>
+    <tr><td>Poids (stockage)</td><td>LUT-RAM ou BRAM</td><td>—</td><td>N bits × nb_poids</td></tr>
+    <tr><td>Pipeline registres</td><td>Flip-Flop</td><td>—</td><td>Proportionnel aux bits</td></tr>
+  </table>
+  </div>
+
+  <div class="box amber">
+    <div class="box-t">Pourquoi les DSPs sont la contrainte critique</div>
+    <p>Un multiplieur 16×16 bits (ap_fixed&lt;16,6&gt; × ap_fixed&lt;16,6&gt;) utilise typiquement <strong>3 DSPs</strong>. Un réseau avec 1000 connexions en RF=1 a besoin de 3000 DSPs — 13× la capacité du PYNQ-Z1. En réduisant à 6 bits (ap_fixed&lt;6,2&gt; × ap_fixed&lt;6,2&gt;), le multiplieur tient dans <strong>1 LUT + 0 DSP</strong>. C'est pourquoi QKeras 6-bit est si efficace.</p>
+  </div>
+
+  <h3>Zynq-7020 — Architecture SoC</h3>
+  <p>Le PYNQ-Z1 utilise un Zynq-7020 qui est un <strong>SoC (System on Chip)</strong> : il combine un processeur ARM Cortex-A9 dual-core (PS — Processing System) avec la logique FPGA programmable (PL — Programmable Logic). HLS4ML déploie le réseau neuronal dans la PL, et Python sur l'ARM contrôle le flux de données via DMA (Part 7).</p>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-evolution')">← Evolution HDL→HLS</button>
+    <button class="nav-btn" onclick="go('th-parallel')">Suivant : Parallélisme & Pipeline →</button>
+  </div>
+</section>
+
+<!-- ══ TH: PARALLEL ══ -->
+<section id="th-parallel" class="section">
+  <h2>2.2.1 — Parallélisme et Pipeline</h2>
+  <p class="subtitle">Les deux stratégies d'accélération fondamentales que HLS4ML exploite</p>
+
+  <h3>① Parallélisme — plusieurs opérations simultanées</h3>
+  <p>Sur CPU : les couches d'un réseau neuronal s'exécutent séquentiellement — fc1 finit, puis fc2 commence. Sur FPGA avec HLS4ML : toutes les couches peuvent avoir leur propre circuit hardware câblé en parallèle. Pendant que fc2 traite la sortie de fc1, fc1 peut déjà commencer à traiter le sample suivant.</p>
+
+  <div class="card blue">
+    <div class="card-title">Analogie : chaîne de montage vs atelier artisanal</div>
+    <p>Un <strong>atelier artisanal (CPU)</strong> : un ouvrier fait tout le travail de A à Z sur une pièce. Productivité limitée par la vitesse d'un ouvrier.<br>
+    Une <strong>chaîne de montage (FPGA)</strong> : chaque poste fait une seule opération, mais plusieurs pièces avancent simultanément dans la chaîne. Productivité = débit de la chaîne entière.</p>
+  </div>
+
+  <h3>② Pipelining — chevauchement des traitements</h3>
+  <p>Le pipelining signifie que pendant qu'une couche traite le sample N, la couche suivante traite déjà le sample N-1. En HLS4ML, le pragma <code>#pragma HLS PIPELINE II=1</code> demande au compilateur d'organiser le circuit pour accepter 1 nouveau sample par cycle d'horloge.</p>
+
+  <div class="prof-wrap">
+    <div class="prof-title">Visualisation du pipeline — 4 samples, 3 couches</div>
+    <div style="overflow-x:auto">
+    <table style="min-width:500px;font-size:11px">
+      <tr>
+        <th style="width:80px">Cycle</th>
+        <th>fc1</th><th>fc2</th><th>fc3</th><th>Output</th>
+      </tr>
+      <tr><td class="mono">Cycle 1</td><td style="background:#E6F1FB;text-align:center">Sample A</td><td style="background:var(--surface2);color:var(--text3);text-align:center">vide</td><td style="background:var(--surface2);color:var(--text3);text-align:center">vide</td><td style="background:var(--surface2);color:var(--text3);text-align:center">vide</td></tr>
+      <tr><td class="mono">Cycle 2</td><td style="background:#E1F5EE;text-align:center">Sample B</td><td style="background:#E6F1FB;text-align:center">Sample A</td><td style="background:var(--surface2);color:var(--text3);text-align:center">vide</td><td style="background:var(--surface2);color:var(--text3);text-align:center">vide</td></tr>
+      <tr><td class="mono">Cycle 3</td><td style="background:#FAEEDA;text-align:center">Sample C</td><td style="background:#E1F5EE;text-align:center">Sample B</td><td style="background:#E6F1FB;text-align:center">Sample A</td><td style="background:var(--surface2);color:var(--text3);text-align:center">vide</td></tr>
+      <tr><td class="mono">Cycle 4</td><td style="background:#EEEDFE;text-align:center">Sample D</td><td style="background:#FAEEDA;text-align:center">Sample C</td><td style="background:#E1F5EE;text-align:center">Sample B</td><td style="background:#E6F1FB;text-align:center"><strong>Résultat A</strong></td></tr>
+      <tr><td class="mono">Cycle 5</td><td style="color:var(--text3);text-align:center">…</td><td style="background:#EEEDFE;text-align:center">Sample D</td><td style="background:#FAEEDA;text-align:center">Sample C</td><td style="background:#E1F5EE;text-align:center"><strong>Résultat B</strong></td></tr>
+    </table>
+    </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:8px">→ Après le remplissage initial (3 cycles), 1 résultat sort à chaque cycle = II=1. La <strong>latency</strong> est de 3 cycles, mais le <strong>débit</strong> est de 1/cycle.</p>
+  </div>
+
+  <h3>Latency vs Throughput — deux métriques différentes</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">Latency (latence)</div>
+      <p>Temps entre l'entrée d'UN sample et la sortie de son résultat. Dans ton modèle Part 1 : <strong>50 cycles = 0.250 µs</strong>. Critique pour les applications temps-réel strictes (trigger LHC, systèmes de contrôle).</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">Throughput (débit)</div>
+      <p>Combien de samples peuvent être traités par unité de temps. Avec II=1 : <strong>1 sample/cycle = 200 millions d'inférences/seconde</strong> à 200MHz. Critique pour les applications à haut débit (classification continue de flux).</p>
+    </div>
+  </div>
+
+  <h3>L'interaction avec le ReuseFactor</h3>
+  <p>Avec RF=1, le circuit est entièrement parallèle et pipeliné → II=1. Avec RF>1, certains calculs sont séquentiels (un multiplicateur partagé entre plusieurs poids) → II = RF. C'est le compromis fondamental du ReuseFactor.</p>
+
+  <div class="box teal">
+    <div class="box-t">Résumé Part 1 — Parallelism vs Ressources</div>
+    <p>Part 1 avec RF=1 : pipelining parfait (II=1), latence minimale (50 cycles), mais 2198 DSPs requis pour 220 disponibles. C'est le prix du parallélisme total — chaque multiplication a son propre hardware câblé physiquement.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-fpga-arch')">← Architecture FPGA</button>
+    <button class="nav-btn" onclick="go('th-rf')">Suivant : ReuseFactor en détail →</button>
+  </div>
+</section>
+
+<!-- ══ TH: RF ══ -->
+<section id="th-rf" class="section">
+  <h2>2.2.2 — ReuseFactor en détail</h2>
+  <p class="subtitle">Le levier principal pour ajuster le compromis latence ↔ ressources</p>
+
+  <h3>Définition précise</h3>
+  <p>Le ReuseFactor (RF) détermine combien de fois une <strong>unité de calcul physique</strong> (un multiplicateur DSP) est réutilisée pour calculer différents produits poids × activation. Il répond à la question : "Est-ce que je câble un multiplicateur par poids (RF=1) ou est-ce que je fais passer plusieurs poids à travers le même multiplicateur séquentiellement (RF>1) ?"</p>
+
+  <div class="formula">DSPs_utilisés = ⌈ N_multiplications ÷ ReuseFactor ⌉</div>
+
+  <h3>Exemple concret — couche Dense avec 100 neurones × 16 entrées = 1600 multiplications</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>RF</th><th>DSPs requis</th><th>Cycles/couche</th><th>II</th><th>Latence relative</th><th>Débit relatif</th></tr>
+    <tr><td class="mono">RF = 1</td><td class="bad">1600</td><td class="ok">1</td><td class="ok">1</td><td class="ok">Minimal</td><td class="ok">1/cycle</td></tr>
+    <tr><td class="mono">RF = 2</td><td class="bad">800</td><td>2</td><td>2</td><td>×2</td><td>1/2 cycles</td></tr>
+    <tr><td class="mono">RF = 4</td><td class="warn">400</td><td>4</td><td>4</td><td>×4</td><td>1/4 cycles</td></tr>
+    <tr><td class="mono">RF = 8</td><td class="warn">200</td><td>8</td><td>8</td><td>×8</td><td>1/8 cycles</td></tr>
+    <tr><td class="mono">RF = 16</td><td class="ok">100</td><td>16</td><td>16</td><td>×16</td><td>1/16 cycles</td></tr>
+    <tr><td class="mono">RF = 64</td><td class="ok">25</td><td>64</td><td>64</td><td>×64</td><td>1/64 cycles</td></tr>
+    <tr><td class="mono">RF = 1600</td><td class="ok">1</td><td class="bad">1600</td><td class="bad">1600</td><td class="bad">Maximal</td><td class="bad">1/1600 cycles</td></tr>
+  </table>
+  </div>
+
+  <div class="box purple">
+    <div class="box-t">Table 2 du PDF — Reuse Factor (reproduite et commentée)</div>
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>ReuseFactor</th><th>DSP-Verbrauch (relatif)</th><th>Latenz</th><th>Initiation Interval</th></tr>
+      <tr><td>1 (vollständig parallel)</td><td class="bad">Maximal</td><td class="ok">Minimal</td><td class="ok">1 Taktzyklus</td></tr>
+      <tr><td>N (vollständig seriell)</td><td class="ok">Minimal</td><td class="bad">Maximal</td><td class="bad">N Taktzyklen</td></tr>
+      <tr><td>Zwischenwert</td><td class="warn">Mittel</td><td class="warn">Mittel</td><td class="warn">RF-Taktzyklen</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <h3>Stratégie mixte par couche — pourquoi c'est optimal</h3>
+  <p>La première couche (fc1) a généralement beaucoup plus de poids que la dernière (output). Donner le même RF à toutes les couches est sous-optimal : la petite couche de sortie n'a pas besoin de RF élevé. La <strong>stratégie mixte</strong> donne un RF élevé aux grandes couches et un RF faible aux petites.</p>
+
+  <pre><span class="cm"># Exemple de stratégie mixte pour ton réseau</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc1'</span>][<span class="st">'ReuseFactor'</span>]    = <span class="num">8</span>   <span class="cm"># grande couche → partager les DSPs</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc2'</span>][<span class="st">'ReuseFactor'</span>]    = <span class="num">4</span>   <span class="cm"># couche intermédiaire</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc3'</span>][<span class="st">'ReuseFactor'</span>]    = <span class="num">2</span>   <span class="cm"># couche plus petite</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'output'</span>][<span class="st">'ReuseFactor'</span>] = <span class="num">1</span>   <span class="cm"># petite couche → garder II=1 ici</span></pre>
+
+  <div class="box amber">
+    <div class="box-t">Règle empirique — 80% de capacité DSP maximum</div>
+    <p>Ne jamais utiliser plus de 80% des DSPs disponibles. Les 20% restants sont réservés pour : la logique de contrôle (AXI interface, DMA), les marges de routage, et les circuits d'horloge. Un FPGA chargé à 95% de DSPs devient souvent impossible à router correctement par Vivado.</p>
+    <p style="margin-top:6px">Pour PYNQ-Z1 : maximum <strong>176 DSPs</strong> (80% × 220). En Part 7, tu en utilises seulement 9 — très confortable.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-parallel')">← Parallélisme & Pipeline</button>
+    <button class="nav-btn" onclick="go('th-apfixed')">Suivant : ap_fixed en détail →</button>
+  </div>
+</section>
+
+<!-- ══ TH: AP_FIXED ══ -->
+<section id="th-apfixed" class="section">
+  <h2>2.2.3 — Precision : ap_fixed — Festkommadarstellung</h2>
+  <p class="subtitle">La représentation des nombres en virgule fixe — formules exactes, diagramme bit par bit, exemples</p>
+
+  <h3>Pourquoi pas float32 sur FPGA ?</h3>
+  <p>Float32 a 1 bit signe + 8 bits exposant + 23 bits mantisse = 32 bits → un multiplieur 32×32 bits qui consomme environ <strong>14-16 DSPs</strong> par multiplication. Avec ap_fixed&lt;8,1&gt;, le multiplieur tient dans <strong>1 DSP ou même 0 DSP</strong> (LUTs seules). C'est pour ça que la quantisation est indispensable sur FPGA.</p>
+
+  <h3>Nomenclature — ap_fixed&lt;W, I&gt;</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">W — Word length (Gesamtbitbreite)</div>
+      <p>Nombre <strong>total</strong> de bits. C'est le premier paramètre. Plus W est grand, plus la représentation est précise, mais plus on consomme de ressources FPGA.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">I — Integer bits (Vorkommabits)</div>
+      <p>Nombre de bits réservés à la <strong>partie entière</strong> (signe inclus). Le signe occupe 1 bit sur les I. Les <code>W−I</code> bits restants sont pour la partie fractionnaire.</p>
+    </div>
+  </div>
+
+  <h3>Diagramme bit par bit — ap_fixed&lt;16, 6&gt; (valeur par défaut HLS4ML)</h3>
+  <div class="card purple" style="font-family:var(--mono)">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Bit 15 (MSB) ←————————————————————————→ Bit 0 (LSB)</div>
+    <div style="display:flex;gap:0;border:2px solid var(--purple);border-radius:6px;overflow:hidden;margin-bottom:8px">
+      <div style="background:#FCEBEB;padding:10px 8px;text-align:center;flex-shrink:0;border-right:2px solid var(--purple);min-width:40px">
+        <div style="font-weight:700;color:#A32D2D;font-size:13px">S</div>
+        <div style="font-size:9px;color:var(--text3)">1 bit</div>
+      </div>
+      <div style="background:#E6F1FB;padding:10px;text-align:center;flex:1;border-right:2px solid var(--purple)">
+        <div style="font-weight:700;color:#185FA5;font-size:13px">I I I I I</div>
+        <div style="font-size:9px;color:var(--text3)">5 bits entiers (I−1 = 5)</div>
+      </div>
+      <div style="background:#EAF3DE;padding:10px;text-align:center;flex:2">
+        <div style="font-weight:700;color:#3B6D11;font-size:13px">F F F F F F F F F F</div>
+        <div style="font-size:9px;color:var(--text3)">10 bits fractionnaires (W−I = 10)</div>
+      </div>
+    </div>
+    <div style="display:flex;font-size:11px;color:var(--text2)">
+      <div style="flex-shrink:0;min-width:40px;padding-right:4px">↑ signe</div>
+      <div style="flex:1;text-align:center">I = 6 bits au total (signe + 5 entiers)</div>
+      <div style="flex:2;text-align:center">W−I = 16−6 = 10 bits fractionnaires</div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text2)">
+      → Résolution : 2<sup>−10</sup> = 0.000977 ≈ <strong>0.001</strong><br>
+      → Max : +2<sup>(6−1)</sup> − 2<sup>−10</sup> = 32 − 0.001 = <strong>+31.999</strong><br>
+      → Min : −2<sup>(6−1)</sup> = <strong>−32</strong>
+    </div>
+  </div>
+
+  <h3>Formules exactes</h3>
+  <div class="formula">ap_fixed&lt;W, I&gt; signé :<br>
+  Résolution = 2<sup>−(W−I)</sup> &nbsp;|&nbsp; Plage = [−2<sup>(I−1)</sup> , +2<sup>(I−1)</sup> − 2<sup>−(W−I)</sup>]<br>
+  Bits fractionnaires = W − I &nbsp;|&nbsp; Max entier absolu = 2<sup>(I−1)</sup></div>
+
+  <h3>Exemple détaillé — ap_fixed&lt;8, 2&gt;</h3>
+  <div class="card blue" style="font-family:var(--mono)">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Bit 7 ←————→ Bit 0</div>
+    <div style="display:flex;gap:0;border:2px solid var(--blue);border-radius:6px;overflow:hidden;margin-bottom:8px">
+      <div style="background:#FCEBEB;padding:8px 6px;text-align:center;flex-shrink:0;border-right:2px solid var(--blue);min-width:36px">
+        <div style="font-weight:700;color:#A32D2D;font-size:12px">S</div>
+        <div style="font-size:9px;color:var(--text3)">1 bit</div>
+      </div>
+      <div style="background:#E6F1FB;padding:8px;text-align:center;flex:1;border-right:2px solid var(--blue)">
+        <div style="font-weight:700;color:#185FA5;font-size:12px">I</div>
+        <div style="font-size:9px;color:var(--text3)">1 bit entier (I−1=1)</div>
+      </div>
+      <div style="background:#EAF3DE;padding:8px;text-align:center;flex:3">
+        <div style="font-weight:700;color:#3B6D11;font-size:12px">F F F F F F</div>
+        <div style="font-size:9px;color:var(--text3)">6 bits fractionnaires (W−I = 8−2 = 6)</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text2)">
+      → Résolution : 2<sup>−6</sup> = 1/64 ≈ <strong>0.015625</strong> (64 valeurs distinctes entre 0 et 1)<br>
+      → Max : +2<sup>(2−1)</sup> − 2<sup>−6</sup> = 2 − 0.015625 = <strong>+1.984375</strong><br>
+      → Min : −2<sup>(2−1)</sup> = <strong>−2</strong>
+    </div>
+  </div>
+
+  <div class="box amber">
+    <div class="box-t">⚠ Erreur fréquente sur la résolution</div>
+    <p>La résolution est <code>2<sup>−(W−I)</sup></code> — c'est la plus petite différence représentable. Pour ap_fixed&lt;8,2&gt; : résolution = 2<sup>−6</sup> = 0.015. Ça signifie qu'entre 0 et 1, il y a 2<sup>6</sup> = 64 valeurs distinctes possibles. Ce n'est pas la valeur maximale — c'est le pas entre deux valeurs consécutives.</p>
+  </div>
+
+  <h3>Tableau comparatif des types courants</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Type</th><th>W</th><th>I</th><th>Bits frac. (W−I)</th><th>Max</th><th>Résolution</th><th>Usage dans HLS4ML</th></tr>
+    <tr><td class="mono">ap_fixed&lt;16,6&gt;</td><td>16</td><td>6</td><td>10</td><td class="warn">±31.999</td><td>2⁻¹⁰ ≈ 0.001</td><td>Défaut conservatif — tout le réseau</td></tr>
+    <tr><td class="mono">ap_fixed&lt;8,1&gt;</td><td>8</td><td>1</td><td>7</td><td class="ok">[-1, +0.992]</td><td>2⁻⁷ ≈ 0.008</td><td>Poids dont le max ≤ 1 (couvre les caps droits à 2⁻¹ = 0.5)</td></tr>
+    <tr><td class="mono">ap_fixed&lt;8,2&gt;</td><td>8</td><td>2</td><td>6</td><td class="ok">±1.984</td><td>2⁻⁶ ≈ 0.016</td><td>Poids dont le cap droit ≈ 2⁰ = 1</td></tr>
+    <tr><td class="mono">ap_fixed&lt;12,3&gt;</td><td>12</td><td>3</td><td>9</td><td class="ok">±3.998</td><td>2⁻⁹ ≈ 0.002</td><td>Activations montant à 2² = 4</td></tr>
+    <tr><td class="mono">ap_fixed&lt;6,2&gt;</td><td>6</td><td>2</td><td>4</td><td class="ok">±1.938</td><td>2⁻⁴ ≈ 0.063</td><td>QKeras agressif</td></tr>
+    <tr><td class="mono">ap_ufixed&lt;8,0&gt;</td><td>8</td><td>0</td><td>8</td><td class="ok">[0, 0.996]</td><td>2⁻⁸ ≈ 0.004</td><td>Softmax (toujours ≥ 0)</td></tr>
+  </table>
+  </div>
+
+  <h3>Règle pratique — déduire I depuis le profiling</h3>
+  <p>Sur le graphique de profiling, l'axe X est en puissances de 2 (2<sup>a</sup>). Quand tu lis le cap droit à <strong>2<sup>a</sup></strong>, il faut :</p>
+  <div class="formula">I_nécessaire = a + 1</div>
+  <p>Explication : pour représenter 2<sup>a</sup>, on a besoin que 2<sup>(I−1)</sup> ≥ 2<sup>a</sup>, donc I−1 ≥ a, donc <strong>I ≥ a+1</strong>.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Cap droit sur profiling</th><th>Valeur réelle</th><th>I minimum (a+1)</th><th>Exemple type</th></tr>
+    <tr><td class="mono">2⁻² = 0.25</td><td>0.25</td><td>I = −2+1 = −1 → I=1 min</td><td>ap_fixed&lt;8,1&gt;</td></tr>
+    <tr><td class="mono">2⁻¹ = 0.5</td><td>0.5</td><td>I = −1+1 = 0 → I=1 min</td><td>ap_fixed&lt;8,1&gt;</td></tr>
+    <tr><td class="mono">2⁰ = 1</td><td>1.0</td><td>I = 0+1 = 1 → I=2 (signe+1)</td><td>ap_fixed&lt;8,2&gt;</td></tr>
+    <tr><td class="mono">2¹ = 2</td><td>2.0</td><td>I = 1+1 = 2 → I=3 (signe+2)</td><td>ap_fixed&lt;10,3&gt;</td></tr>
+    <tr><td class="mono">2² = 4</td><td>4.0</td><td>I = 2+1 = 3 → I=4 (signe+3)</td><td>ap_fixed&lt;12,4&gt;</td></tr>
+    <tr><td class="mono">2⁵ = 32</td><td>32.0</td><td>I = 5+1 = 6 (c'est le défaut !)</td><td>ap_fixed&lt;16,6&gt;</td></tr>
+  </table>
+  </div>
+  <div class="box teal">
+    <div class="box-t">Application à tes graphiques</div>
+    <p><strong>Poids</strong> (cap droit ≈ 2⁻¹) → a = −1 → I = 0, mais minimum signé = I=1 → <code>ap_fixed&lt;8,1&gt;</code><br>
+    <strong>Activations</strong> (cap droit ≈ 2²) → a = 2 → I = 3 → <code>ap_fixed&lt;12,3&gt;</code><br>
+    <strong>Défaut &lt;16,6&gt;</strong> = I=6, max = ±32 → pour des poids qui ne dépassent jamais 0.5, on gaspille 5 bits entiers inutilement.</p>
+  </div>
+
+  <h3>Mode de troncature — Truncation vs Rounding</h3>
+  <p>Quand une valeur ne peut pas être représentée exactement, il faut arrondir. HLS4ML supporte plusieurs modes :</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Mode</th><th>Paramètre</th><th>Comportement</th><th>Impact</th></tr>
+    <tr><td>Truncation (défaut)</td><td><code>AP_TRN</code></td><td>Tronque vers −∞ (coupe les bits)</td><td>Rapide, biais négatif systématique</td></tr>
+    <tr><td>Round Half Up</td><td><code>AP_RND</code></td><td>Arrondit au plus proche (0.5 → haut)</td><td>Plus précis, légèrement plus de LUTs</td></tr>
+    <tr><td>Round + Saturation</td><td><code>AP_RND,AP_SAT</code></td><td>Arrondi + sature si overflow</td><td>Utilisé en Part 6 pour Softmax</td></tr>
+  </table>
+  </div>
+  <pre><span class="cm"># Exemple Part 6 — output layer avec rounding et saturation</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'output'</span>][<span class="st">'Precision'</span>][<span class="st">'result'</span>] = <span class="st">'ap_fixed&lt;16,6,AP_RND,AP_SAT&gt;'</span>
+<span class="cm"># AP_SAT : si la valeur dépasse ±32, elle est saturée à ±31.999 au lieu de wrap-around</span></pre>
+
+  <h3>Les deux risques : Overflow vs Underflow</h3>
+  <div class="g2">
+    <div class="card red">
+      <div class="card-title">❌ Overflow — I trop petit (le pire)</div>
+      <p>Une valeur dépasse la plage représentable → <strong>wrap-around</strong> (en mode troncature) : +33 devient −31. Le réseau produit des résultats <strong>catastrophiquement faux</strong>. C'est le bug le plus difficile à diagnostiquer car il n'y a pas de message d'erreur — juste une accuracy effondrée.</p>
+      <pre style="font-size:11px"><span class="cm"># Valeur réelle : 5.3</span>
+<span class="cm"># ap_fixed&lt;8,2&gt; : max = 1.984, mode AP_TRN</span>
+<span class="cm"># 5.3 → wrap-around → -2.7 !!</span>
+<span class="cm"># → le réseau pense que l'activation est négative</span></pre>
+    </div>
+    <div class="card amber">
+      <div class="card-title">⚠ Underflow — W−I trop petit (acceptable)</div>
+      <p>La résolution est trop grossière → des valeurs proches sont arrondies à la même valeur. Le réseau perd de la précision fine mais ne produit pas de résultats catastrophiques. Souvent acceptable si la perte d'accuracy reste sous 1-2%.</p>
+      <pre style="font-size:11px"><span class="cm"># ap_fixed&lt;8,2&gt; : résolution = 2⁻⁶ = 0.016</span>
+<span class="cm"># Les valeurs 0.001 et 0.015 deviennent toutes les deux 0.000</span>
+<span class="cm"># → perte de précision fine, souvent négligeable</span></pre>
+    </div>
+  </div>
+
+  <h3>Impact sur les ressources FPGA</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Précision poids × activation</th><th>DSPs / multiplication</th><th>LUTs</th><th>Commentaire</th></tr>
+    <tr><td class="mono">16-bit × 16-bit</td><td class="bad">2–3 DSPs</td><td>0</td><td>Défaut — trop lourd pour PYNQ-Z1</td></tr>
+    <tr><td class="mono">12-bit × 12-bit</td><td class="warn">1–2 DSPs</td><td>faible</td><td>Bon compromis</td></tr>
+    <tr><td class="mono">8-bit × 8-bit</td><td class="ok">0–1 DSP</td><td>faible</td><td>QKeras territory</td></tr>
+    <tr><td class="mono">6-bit × 6-bit</td><td class="ok">0 DSP</td><td>modéré</td><td>QKeras 6-bit Part 4</td></tr>
+    <tr><td class="mono">4-bit × 4-bit</td><td class="ok">0 DSP</td><td>faible</td><td>HGQ agressif Part 4.1</td></tr>
+  </table>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">La règle d'or : commencer large, réduire progressivement</div>
+    <p>Toujours partir de <code>ap_fixed&lt;16,6&gt;</code> pour tout le réseau. Profiler → identifier les caps droits → calculer I_nécessaire = a+1 → réduire N couche par couche → valider l'accuracy à chaque étape. <strong>Ne jamais faire l'inverse</strong> — trop d'interactions entre couches rendent le débogage impossible.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-rf')">← ReuseFactor</button>
+    <button class="nav-btn" onclick="go('th-pruning')">Suivant : Pruning →</button>
+  </div>
+</section>
+
+<!-- ══ TH: PRUNING ══ -->
+<section id="th-pruning" class="section">
+  <h2>2.2.5 — Pruning et Sparsité</h2>
+  <p class="subtitle">Mettre des poids à zéro pendant l'entraînement pour économiser les DSPs</p>
+
+  <h3>Principe fondamental</h3>
+  <p>Un réseau neuronal dense de base utilise chaque connexion (poids) avec une valeur non-nulle. Le pruning consiste à <strong>mettre délibérément certains poids à zéro</strong>. Un poids nul × une activation = 0 → multiplication inutile → DSP économisé.</p>
+
+  <div class="box purple">
+    <div class="box-t">Pourquoi ça marche ? — La surparamétrisation des réseaux</div>
+    <p>Les réseaux neuronaux typiques sont massivement surparamétrés : ils ont beaucoup plus de poids qu'il n'en faut pour la tâche. Des études (Lottery Ticket Hypothesis, Frankle et al. 2018) montrent qu'on peut souvent réduire 50-90% des poids à zéro sans perte d'accuracy significative, à condition de le faire progressivement pendant l'entraînement.</p>
+  </div>
+
+  <h3>Types de Pruning</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">Magnitude Pruning (utilisé en Part 3 & 4)</div>
+      <p>Les poids avec la plus petite valeur absolue sont mis à zéro. Intuition : un poids proche de zéro a peu d'influence sur la sortie. TensorFlow Model Optimization Toolkit fait ça progressivement :</p>
+      <p>Entraînement normal → début pruning (10% → 30% → 50%) → fine-tuning final.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">Structured vs Unstructured Pruning</div>
+      <p><strong>Unstructured</strong> : des poids individuels aléatoires → sparsité irrégulière → difficile à exploiter en hardware.<br>
+      <strong>Structured</strong> : des neurones entiers, des filtres entiers → blocs de zéros réguliers → <strong>plus efficace sur FPGA</strong>. HLS4ML recommande le structured pruning.</p>
+    </div>
+  </div>
+
+  <h3>Comment HLS4ML exploite la sparsité</h3>
+  <p>HLS4ML peut exploiter les zéros <strong>seulement si le ReuseFactor est un multiple du pattern de sparsité</strong>. Si 50% des poids sont zéro et RF=2, alors chaque multiplicateur hardware ne voit en moyenne qu'un seul poids non-nul par paire → son usage est divisé par 2.</p>
+
+  <pre><span class="cm"># Activer l'option Unrolled pour exploiter la sparsité</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc1'</span>][<span class="st">'Unrolled'</span>] = <span class="kw">True</span>
+<span class="cm"># → hls4ml génère du code HLS qui saute les multiplications par zéro</span></pre>
+
+  <h3>Résultats observés dans ta Projektarbeit</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Configuration</th><th>Sparsité</th><th>DSPs requis</th><th>Réduction vs baseline</th><th>Perte accuracy</th></tr>
+    <tr><td>Part 1 (baseline)</td><td>0%</td><td class="bad">2198</td><td>—</td><td>—</td></tr>
+    <tr><td>Part 3 (pruning)</td><td>50%</td><td class="bad">909</td><td>−59%</td><td class="warn">−0.67%</td></tr>
+    <tr><td>Part 4 (QKeras+pruning)</td><td>75%</td><td class="ok">122</td><td>−94%</td><td class="ok">+0.01%</td></tr>
+  </table>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">Conclusion : Pruning + QKeras = synergie puissante</div>
+    <p>Le pruning seul (Part 3) réduit les DSPs de 59% mais n'est pas suffisant. QKeras seul réduit la taille des multiplicateurs. Ensemble (Part 4) : 75% de zéros → moins de multiplicateurs nécessaires, ET des multiplicateurs 6-bit plutôt que 16-bit → résultat : 122 DSPs au lieu de 2198, soit −94% de ressources avec <em>meilleure</em> accuracy que la Part 3.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-apfixed')">← ap_fixed</button>
+    <button class="nav-btn" onclick="go('th-latii')">Suivant : Latency & II →</button>
+  </div>
+</section>
+
+<!-- ══ TH: ACTIVATIONS & BATCHNORM ══ -->
+<section id="th-activ" class="section">
+  <h2>Activations & Batch Normalization</h2>
+  <p class="subtitle">Pourquoi les activations n'utilisent quasiment pas de DSPs — et comment HLS4ML fait disparaître la BatchNorm</p>
+
+  <h3>① À quoi sert une fonction d'activation ?</h3>
+  <p>Sans fonction d'activation, un réseau Dense de N couches est <strong>mathématiquement équivalent à une seule couche Dense</strong>. La composition de transformations linéaires reste linéaire — le réseau ne peut apprendre que des frontières de décision linéaires, quel que soit le nombre de couches.</p>
+
+  <div class="card purple">
+    <div class="card-title">Preuve — 2 couches Dense sans activation = 1 seule couche</div>
+    <div style="background:var(--surface2);border-radius:6px;padding:12px;font-family:var(--mono);font-size:12px;line-height:2.2">
+      <div>couche1 : y₁ = W₁ · x + b₁ &nbsp;<span style="color:var(--text3)">← linéaire</span></div>
+      <div>couche2 : y₂ = W₂ · y₁ + b₂ &nbsp;<span style="color:var(--text3)">← linéaire</span></div>
+      <div style="color:var(--amber)">→ y₂ = W₂·(W₁·x + b₁) + b₂ = (W₂·W₁)·x + (W₂·b₁ + b₂)</div>
+      <div style="color:var(--red);font-weight:700">→ y₂ = W_eq·x + b_eq &nbsp;&nbsp; ← équivalent à 1 seule couche !</div>
+    </div>
+    <p style="margin-top:8px">ReLU casse cette linéarité : <code>max(0, y₁)</code> n'est pas linéaire → les couches successives peuvent apprendre des représentations non-linéaires complexes.</p>
+  </div>
+
+  <h3>② Les activations dans ton réseau — DSPs et LUTs</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Couche</th><th>Fonction</th><th>Formule</th><th>Rôle</th><th>DSPs</th><th>LUTs</th></tr>
+    <tr>
+      <td class="mono">relu1, relu2, relu3</td>
+      <td><strong>ReLU</strong></td>
+      <td style="font-family:var(--mono);font-size:12px">max(0, x)</td>
+      <td>Non-linéarité entre couches cachées</td>
+      <td class="ok"><strong>0</strong></td>
+      <td class="ok">~0 (1 comparateur par neurone)</td>
+    </tr>
+    <tr>
+      <td class="mono">softmax</td>
+      <td><strong>Softmax</strong></td>
+      <td style="font-family:var(--mono);font-size:12px">exp(xᵢ) / Σexp(xⱼ)</td>
+      <td>Sortie → probabilités (somme = 1)</td>
+      <td class="ok"><strong>~0</strong></td>
+      <td class="warn">Modéré (LUT-tables pour exp())</td>
+    </tr>
+  </table>
+  </div>
+
+  <h3>③ Pourquoi ReLU ne coûte rien sur FPGA</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">Sur CPU</div>
+      <p><code>if (x > 0) return x; else return 0;</code><br>
+      Un test conditionnel. Simple mais séquentiel.</p>
+    </div>
+    <div class="card teal">
+      <div class="card-title">Sur FPGA — câblage direct</div>
+      <p>Juste regarder le <strong>bit de signe</strong> (MSB) :<br>
+      signe = 0 → x ≥ 0 → sortie = x<br>
+      signe = 1 → x &lt; 0 → sortie = 0<br>
+      <strong>1 LUT suffit. 0 DSP. Latence = 1 cycle.</strong></p>
+    </div>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">Impact de ReLU sur le profiling</div>
+    <p>Dans tes graphiques d'activations (③ et ④), les couches relu1, relu2, relu3 ont leur <strong>cap gauche exactement à 0</strong> — toutes les valeurs négatives ont été coupées. C'est visible sur ton graphique : la moustache gauche des ReLU commence exactement à l'origine. Cela signifie que pour le type de résultat de ces couches, I=1 couvre presque toujours la plage (valeurs ≥ 0).</p>
+  </div>
+
+  <div class="card amber">
+    <div class="card-title">Softmax — cas spécial Part 6</div>
+    <p>En Part 6 (CNN), la config <code>auto</code> pour Softmax générait un débordement de LUTs car HLS4ML essayait d'approcher exp() sur une plage trop large. Solution :</p>
+    <pre style="font-size:11px"><span class="cm"># Forcer la précision de la couche output (logits avant softmax)</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'output'</span>][<span class="st">'Precision'</span>][<span class="st">'result'</span>] = <span class="st">'ap_fixed&lt;16,6,AP_RND,AP_SAT&gt;'</span>
+<span class="cm"># AP_RND : arrondi (pas de troncature biaisée)
+# AP_SAT : saturation si overflow (évite le wrap-around catastrophique)</span></pre>
+  </div>
+
+  <hr class="sep">
+  <h3>④ Batch Normalization — qu'est-ce que c'est ?</h3>
+  <p>La BatchNorm normalise les sorties de chaque couche pendant l'entraînement pour stabiliser et accélérer la convergence. Elle applique à chaque activation x :</p>
+  <div class="formula">y = γ × (x − μ) / √(σ² + ε) + β</div>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Paramètre</th><th>Type</th><th>Signification</th><th>Valeur à l'inférence</th></tr>
+    <tr><td class="mono">μ</td><td>Statistique</td><td>Moyenne des activations (calculée sur le batch d'entraînement)</td><td>Fixe — moving average</td></tr>
+    <tr><td class="mono">σ²</td><td>Statistique</td><td>Variance des activations</td><td>Fixe — moving average</td></tr>
+    <tr><td class="mono">γ</td><td>Appris</td><td>Facteur d'échelle — le réseau choisit l'amplitude</td><td>Poids appris, fixe</td></tr>
+    <tr><td class="mono">β</td><td>Appris</td><td>Décalage — le réseau choisit le centre</td><td>Poids appris, fixe</td></tr>
+    <tr><td class="mono">ε</td><td>Constante</td><td>Petit nombre pour éviter la division par 0</td><td>≈ 1e-5</td></tr>
+  </table>
+  </div>
+
+  <h3>⑤ Simplification à l'inférence → opération affine</h3>
+  <p>À l'inférence, μ et σ² sont <strong>figés</strong>. La formule se réduit à une simple multiplication + addition :</p>
+  <div style="background:var(--surface2);border-radius:8px;padding:14px;font-family:var(--mono);font-size:12px;line-height:2.4;margin:10px 0">
+    <div style="color:var(--text2)">y = γ × (x − μ) / √(σ² + ε) + β</div>
+    <div style="color:var(--text2)">y = x × <span style="color:var(--blue)">[ γ / √(σ² + ε) ]</span> + <span style="color:var(--teal)">[ β − μ × γ / √(σ² + ε) ]</span></div>
+    <div style="color:var(--purple);font-weight:700">y = x × <span style="color:var(--blue)">a</span> + <span style="color:var(--teal)">b</span> &nbsp;&nbsp;&nbsp; ← constantes calculables avant synthèse FPGA</div>
+  </div>
+
+  <h3>⑥ La fusion BatchNorm dans HLS4ML</h3>
+  <p>HLS4ML fusionne automatiquement la BatchNorm dans la couche Dense précédente. Les poids et biais de la Dense sont modifiés pour absorber a et b :</p>
+  <div style="background:var(--surface2);border-radius:8px;padding:14px;font-family:var(--mono);font-size:12px;line-height:2.4;margin:10px 0">
+    <div style="color:var(--text3)">Avant fusion :</div>
+    <div>&nbsp;&nbsp;Dense : z = W · x + b_d</div>
+    <div>&nbsp;&nbsp;BatchNorm : y = a × z + b_bn</div>
+    <div style="color:var(--text3);margin-top:4px">Après fusion (équivalent exact) :</div>
+    <div style="color:var(--purple);font-weight:700">&nbsp;&nbsp;Dense fusionnée : y = <span style="color:var(--blue)">(a·W)</span> · x + <span style="color:var(--teal)">(a·b_d + b_bn)</span></div>
+  </div>
+
+  <div class="box green">
+    <div class="box-t">✅ BatchNorm = 0 ressource supplémentaire sur FPGA</div>
+    <p>Après fusion, la BatchNorm disparaît du modèle HLS. Ses paramètres sont absorbés dans les poids et biais Dense. Résultat : <strong>0 DSP et 0 LUT supplémentaires</strong>. C'est gratuit — c'est l'une des raisons pour lesquelles HLS4ML recommande d'utiliser BatchNorm pendant l'entraînement sans crainte pour l'inférence FPGA.</p>
+  </div>
+
+  <h3>⑦ Pourquoi les graphiques ① et ② diffèrent quand il y a des BatchNorm</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">① Poids — AVANT optimisation</div>
+      <p>Montre fc1, <strong>bn1</strong>, fc2, <strong>bn2</strong>, fc3, <strong>bn3</strong> séparément. Les couches bn ont leurs propres distributions de γ et β bien distinctes.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">② Poids — APRÈS optimisation ← à utiliser</div>
+      <p>Les couches bn1, bn2, bn3 <strong>ont disparu</strong>. Les poids fc1, fc2, fc3 ont changé (multipliés par a). Les distributions sont différentes → il faut utiliser ② pour choisir ap_fixed.</p>
+    </div>
+  </div>
+
+  <div class="box amber">
+    <div class="box-t">Ton cas — pas de BatchNorm → ① ≈ ②</div>
+    <p>Ton réseau fc1→relu→fc2→relu→fc3→relu→output→softmax n'a pas de BatchNorm. HLS4ML n'a rien à fusionner → les distributions avant et après sont quasi-identiques. C'est normal et attendu.</p>
+  </div>
+
+  <h3>Récapitulatif — coûts hardware par type de couche</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Couche</th><th>Opération</th><th>DSPs</th><th>LUTs</th><th>Dans profiling ?</th></tr>
+    <tr><td class="mono">Dense</td><td>W·x + b</td><td class="bad">Élevé (W, N_muls, RF)</td><td class="warn">Modéré</td><td class="ok">Oui — poids + activations</td></tr>
+    <tr><td class="mono">ReLU</td><td>max(0, x)</td><td class="ok">0</td><td class="ok">~0</td><td class="ok">Oui — cap gauche = 0</td></tr>
+    <tr><td class="mono">BatchNorm</td><td>fusionnée → a·x + b</td><td class="ok">0 extra</td><td class="ok">0 extra</td><td class="warn">Avant seulement</td></tr>
+    <tr><td class="mono">Softmax</td><td>exp(x)/Σexp</td><td class="ok">~0</td><td class="warn">Modéré (LUT-tables)</td><td class="ok">Oui — [0,1]</td></tr>
+    <tr><td class="mono">Conv2D</td><td>Convolutions 2D</td><td class="bad">Très élevé</td><td class="bad">Élevé</td><td class="ok">Oui</td></tr>
+  </table>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-pruning')">← Pruning & Sparsité</button>
+    <button class="nav-btn" onclick="go('th-latii')">Suivant : Latency & II →</button>
+  </div>
+</section>
+
+<!-- ══ TH: LAT/II ══ -->
+<section id="th-latii" class="section">
+  <h2>2.2.6 — Latency et Initiation Interval (II)</h2>
+  <p class="subtitle">Deux métriques distinctes qui mesurent des aspects différents de la performance temporelle</p>
+
+  <h3>Définitions précises</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">Latency (Latenz)</div>
+      <p>Nombre de cycles d'horloge nécessaires pour qu'un sample entre dans le réseau et que son résultat sorte. Mesure le <strong>temps de réponse pour un seul sample</strong>.</p>
+      <div class="formula" style="font-size:11px">Latence [µs] = Cycles ÷ Fréquence_horloge [MHz]</div>
+      <p>PYNQ-Z1 @ 100 MHz : 50 cycles = 0.500 µs<br>PYNQ-Z1 @ 200 MHz : 50 cycles = 0.250 µs</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">Initiation Interval (II)</div>
+      <p>Nombre de cycles d'horloge avant que le système soit prêt à accepter un <strong>nouveau</strong> sample. Mesure le <strong>débit maximum</strong>.</p>
+      <div class="formula" style="font-size:11px">Débit [samples/s] = Fréquence [Hz] ÷ II</div>
+      <p>II=1 → 200M samples/s à 200MHz<br>II=94 → ~2.1M samples/s (Part 7)</p>
+    </div>
+  </div>
+
+  <h3>Relation avec le ReuseFactor</h3>
+  <div class="formula">II = ReuseFactor (dans le cas général avec pipelining HLS)</div>
+
+  <p>Avec RF=1 : chaque multiplication a son propre hardware → II=1 (pipelining complet). Avec RF=64 : 64 poids partagent un multiplieur → il faut 64 cycles pour traiter tous les poids d'une couche → II=64 (approximativement, dépend de l'architecture exacte).</p>
+
+  <h3>Tableau des résultats de ta Projektarbeit</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Part</th><th>RF</th><th>Latence (cycles)</th><th>Latence (µs)</th><th>II</th><th>Débit théorique</th></tr>
+    <tr><td>Part 1</td><td>1</td><td>50</td><td class="ok">0.250</td><td class="ok">1</td><td class="ok">200M/s</td></tr>
+    <tr><td>Part 2</td><td>2</td><td>47</td><td class="ok">0.235</td><td class="warn">2</td><td class="warn">100M/s</td></tr>
+    <tr><td>Part 3</td><td>1</td><td>46</td><td class="ok">0.230</td><td class="ok">1</td><td class="ok">200M/s</td></tr>
+    <tr><td>Part 4</td><td>1</td><td>49</td><td class="ok">0.245</td><td class="ok">1</td><td class="ok">200M/s</td></tr>
+    <tr><td>Part 4.1</td><td>1</td><td>31</td><td class="ok">0.155</td><td class="ok">1</td><td class="ok">200M/s</td></tr>
+    <tr><td>Part 6 (CNN)</td><td>1</td><td>1044</td><td>5.22</td><td class="bad">1028</td><td class="bad">~195k/s</td></tr>
+    <tr><td>Part 7</td><td>64</td><td>93</td><td class="warn">0.465</td><td class="warn">94</td><td class="warn">~2.1M/s</td></tr>
+  </table>
+  </div>
+
+  <div class="box amber">
+    <div class="box-t">Pourquoi la Part 6 (CNN) a II=1028 ?</div>
+    <p>Le CNN utilise <code>io_type='io_stream'</code> : les pixels d'une image 32×32 arrivent en séquence (1 pixel par cycle). Pour traiter une image complète, il faut 32×32 = 1024 cycles d'entrée + quelques cycles de finalisation = II≈1028. Ce n'est pas lié au ReuseFactor mais à la nature séquentielle du streaming de données d'image.</p>
+  </div>
+
+  <h3>io_parallel vs io_stream — le choix architectural</h3>
+  <div class="g2">
+    <div class="card teal">
+      <div class="card-title">io_parallel (défaut pour MLP)</div>
+      <p>Toutes les entrées arrivent simultanément en un seul cycle. Latence minimale, mais consomme beaucoup de mémoire si les vecteurs d'entrée sont grands. Utilisé en Parts 1-5.</p>
+    </div>
+    <div class="card blue">
+      <div class="card-title">io_stream (pour CNN et grandes entrées)</div>
+      <p>Les données arrivent en séquence (streaming). Réduit la mémoire de tampon nécessaire. II élevé mais mémoire minimale. Nécessaire pour les images CNN qui ont des milliers de valeurs d'entrée.</p>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-pruning')">← Pruning & Sparsité</button>
+    <button class="nav-btn" onclick="go('th-gran')">Suivant : Granularité →</button>
+  </div>
+</section>
+
+<!-- ══ TH: GRANULARITE ══ -->
+<section id="th-gran" class="section">
+  <h2>2.2.7 — Granularité de la Quantisation</h2>
+  <p class="subtitle">3 niveaux de configuration : global (model), par type (type), par couche (name) — et le cas HGQ</p>
+
+  <h3>Vue d'ensemble — du plus grossier au plus fin</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Niveau</th><th>Paramètre</th><th>Granularité</th><th>Avantages</th><th>Utilisé en</th></tr>
+    <tr><td><strong>Global</strong></td><td class="mono">granularity='model'</td><td>1 précision pour tout le réseau</td><td>Simple, rapide</td><td>Part 1, Part 3</td></tr>
+    <tr><td><strong>Par type</strong></td><td class="mono">granularity='type'</td><td>1 précision par type (Dense, ReLU…)</td><td>Sépare poids et activations</td><td>Rare</td></tr>
+    <tr><td><strong>Par couche</strong></td><td class="mono">granularity='name'</td><td>1 précision par couche nommée</td><td>Optimisation maximale</td><td>Part 2, 4, 4.1</td></tr>
+    <tr><td><strong>Par poids</strong></td><td>HGQ Framework</td><td>1 précision par poids individuel</td><td>Ressources minimales absolues</td><td>Part 4.1</td></tr>
+  </table>
+  </div>
+
+  <hr class="sep">
+  <h3>① Niveau global — granularity='model'</h3>
+  <p>Une seule précision s'applique à <strong>tous les poids, biais et résultats</strong> de toutes les couches. Le ReuseFactor global s'applique aussi uniformément.</p>
+  <pre><span class="cm"># Configuration globale — Part 1 et Part 3</span>
+config = hls4ml.utils.<span class="fn">config_from_keras_model</span>(model, granularity=<span class="st">'model'</span>)
+
+<span class="cm"># Modifier la précision globale</span>
+config[<span class="st">'Model'</span>][<span class="st">'Precision'</span>]    = <span class="st">'ap_fixed&lt;16,6&gt;'</span>  <span class="cm"># défaut</span>
+config[<span class="st">'Model'</span>][<span class="st">'ReuseFactor'</span>]  = <span class="num">1</span>                  <span class="cm"># Part 1</span>
+
+<span class="cm"># Pour voir la config générée :</span>
+<span class="kw">import</span> json
+<span class="fn">print</span>(json.<span class="fn">dumps</span>(config, indent=<span class="num">4</span>))</pre>
+
+  <div class="box blue">
+    <div class="box-t">Quand utiliser 'model'</div>
+    <p>Pour les premiers tests ou quand toutes les couches ont des distributions similaires. Inconvénient : si fc1 a besoin de ap_fixed&lt;8,1&gt; mais que la couche output a besoin de ap_fixed&lt;12,3&gt;, on est bloqué à la précision la plus haute — gaspillage.</p>
+  </div>
+
+  <hr class="sep">
+  <h3>② Niveau par type — granularity='type'</h3>
+  <p>Permet de donner des précisions différentes selon le <strong>type de couche</strong> (Dense, Activation, BatchNorm, etc.). Utile pour distinguer les couches de calcul des couches d'activation.</p>
+  <pre><span class="cm"># Configuration par type de couche</span>
+config = hls4ml.utils.<span class="fn">config_from_keras_model</span>(model, granularity=<span class="st">'type'</span>)
+
+<span class="cm"># Précision pour tous les Dense</span>
+config[<span class="st">'LayerType'</span>][<span class="st">'Dense'</span>][<span class="st">'Precision'</span>]      = <span class="st">'ap_fixed&lt;10,2&gt;'</span>
+config[<span class="st">'LayerType'</span>][<span class="st">'Dense'</span>][<span class="st">'ReuseFactor'</span>]   = <span class="num">4</span>
+
+<span class="cm"># Précision pour toutes les Activation (ReLU, etc.)</span>
+config[<span class="st">'LayerType'</span>][<span class="st">'Activation'</span>][<span class="st">'Precision'</span>] = <span class="st">'ap_fixed&lt;12,3&gt;'</span>
+
+<span class="cm"># Priorité : LayerName &gt; LayerType &gt; Model</span>
+<span class="cm"># Si une couche a une config 'name', elle écrase 'type'</span></pre>
+
+  <hr class="sep">
+  <h3>③ Niveau par couche — granularity='name' ← recommandé</h3>
+  <p>Le niveau le plus puissant. Chaque couche, identifiée par son nom, reçoit sa propre configuration. On peut contrôler séparément les poids, les biais, et les résultats (sorties) de chaque couche.</p>
+  <pre><span class="cm"># Configuration par couche — Part 2 et Part 4</span>
+config = hls4ml.utils.<span class="fn">config_from_keras_model</span>(model, granularity=<span class="st">'name'</span>)
+
+<span class="cm"># ── Activer le Trace sur toutes les couches (pour débogage) ──</span>
+<span class="kw">for</span> layer <span class="kw">in</span> config[<span class="st">'LayerName'</span>].keys():
+    config[<span class="st">'LayerName'</span>][layer][<span class="st">'Trace'</span>] = <span class="kw">True</span>
+
+<span class="cm"># ── Précision des poids par couche ──</span>
+<span class="cm"># Cap droit poids ≈ 2⁻¹ → I = 0+1 = 1 → ap_fixed&lt;8,1&gt;</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc1'</span>][<span class="st">'Precision'</span>][<span class="st">'weight'</span>]   = <span class="st">'ap_fixed&lt;8,1&gt;'</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc2'</span>][<span class="st">'Precision'</span>][<span class="st">'weight'</span>]   = <span class="st">'ap_fixed&lt;8,1&gt;'</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc3'</span>][<span class="st">'Precision'</span>][<span class="st">'weight'</span>]   = <span class="st">'ap_fixed&lt;8,1&gt;'</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'output'</span>][<span class="st">'Precision'</span>][<span class="st">'weight'</span>] = <span class="st">'ap_fixed&lt;8,1&gt;'</span>
+
+<span class="cm"># ── Précision des biais (plus concentrés → moins de bits) ──</span>
+<span class="kw">for</span> layer <span class="kw">in</span> [<span class="st">'fc1'</span>, <span class="st">'fc2'</span>, <span class="st">'fc3'</span>, <span class="st">'output'</span>]:
+    config[<span class="st">'LayerName'</span>][layer][<span class="st">'Precision'</span>][<span class="st">'bias'</span>] = <span class="st">'ap_fixed&lt;10,2&gt;'</span>
+
+<span class="cm"># ── Précision des résultats (sorties des couches) ──</span>
+<span class="cm"># Cap droit activations ≈ 2² → I = 2+1 = 3 → ap_fixed&lt;12,3&gt;</span>
+<span class="kw">for</span> layer <span class="kw">in</span> [<span class="st">'fc1'</span>, <span class="st">'fc2'</span>, <span class="st">'fc3'</span>]:
+    config[<span class="st">'LayerName'</span>][layer][<span class="st">'Precision'</span>][<span class="st">'result'</span>] = <span class="st">'ap_fixed&lt;12,3&gt;'</span>
+
+<span class="cm"># ── ReuseFactor mixte par couche ──</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc1'</span>][<span class="st">'ReuseFactor'</span>]    = <span class="num">4</span>   <span class="cm"># grande couche</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc2'</span>][<span class="st">'ReuseFactor'</span>]    = <span class="num">2</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc3'</span>][<span class="st">'ReuseFactor'</span>]    = <span class="num">1</span>   <span class="cm"># petite couche</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'output'</span>][<span class="st">'ReuseFactor'</span>] = <span class="num">1</span></pre>
+
+  <div class="box amber">
+    <div class="box-t">Ce que hls4ml calcule automatiquement avec granularity='name'</div>
+    <p>Les <strong>accumulateurs</strong> internes de chaque couche Dense sont calculés automatiquement. Un accumulateur stocke la somme partielle des produits (poids × entrée) pendant qu'on parcourt tous les neurones. Sa taille doit éviter l'overflow. hls4ml calcule cette taille sur le <strong>pire cas théorique</strong> (toutes entrées à leur max théorique), ce qui est souvent 2-4× trop large par rapport aux valeurs réelles. Le profiling permet de le réduire manuellement.</p>
+  </div>
+
+  <h3>Hiérarchie de priorité des configurations</h3>
+  <div class="formula">LayerName &gt; LayerType &gt; Model (la plus spécifique l'emporte)</div>
+  <pre><span class="cm"># Exemple : on peut mixer les niveaux</span>
+config = hls4ml.utils.<span class="fn">config_from_keras_model</span>(model, granularity=<span class="st">'name'</span>)
+
+<span class="cm"># Précision globale de base pour toutes les couches non configurées</span>
+config[<span class="st">'Model'</span>][<span class="st">'Precision'</span>] = <span class="st">'ap_fixed&lt;16,6&gt;'</span>
+
+<span class="cm"># Écrase pour tous les Dense</span>
+config[<span class="st">'LayerType'</span>][<span class="st">'Dense'</span>][<span class="st">'Precision'</span>] = <span class="st">'ap_fixed&lt;10,2&gt;'</span>
+
+<span class="cm"># Écrase pour la couche fc1 spécifiquement (priorité max)</span>
+config[<span class="st">'LayerName'</span>][<span class="st">'fc1'</span>][<span class="st">'Precision'</span>] = <span class="st">'ap_fixed&lt;8,1&gt;'</span>
+<span class="cm"># → fc1 utilisera ap_fixed&lt;8,1&gt; (name écrase type écrase model)</span></pre>
+
+  <h3>Comment vérifier la config générée</h3>
+  <pre><span class="cm"># Voir toute la structure de config :</span>
+<span class="kw">from</span> hls4ml.utils <span class="kw">import</span> config_from_keras_model
+config = <span class="fn">config_from_keras_model</span>(model, granularity=<span class="st">'name'</span>)
+
+<span class="kw">print</span>(<span class="st">"Couches disponibles :"</span>, list(config[<span class="st">'LayerName'</span>].keys()))
+<span class="cm"># Output exemple : ['fc1', 'relu1', 'fc2', 'relu2', 'fc3', 'relu3', 'output', 'softmax']</span>
+
+<span class="cm"># Voir la config d'une couche :</span>
+<span class="kw">print</span>(config[<span class="st">'LayerName'</span>][<span class="st">'fc1'</span>])
+<span class="cm"># Output : {'Precision': {'weight': 'ap_fixed&lt;16,6&gt;', 'bias': 'ap_fixed&lt;16,6&gt;',</span>
+<span class="cm">#            'result': 'ap_fixed&lt;16,6&gt;', 'accum': 'ap_fixed&lt;26,11&gt;'},</span>
+<span class="cm">#            'ReuseFactor': 1, 'Trace': False}</span>
+<span class="cm"># → 'accum' calculé automatiquement : beaucoup plus large que nécessaire !</span></pre>
+
+  <div class="box red">
+    <div class="box-t">Le problème de la config conservative automatique des accumulateurs</div>
+    <p>Ci-dessus, l'accumulateur auto-calculé est ap_fixed&lt;26,11&gt; — 26 bits pour stocker des sommes de produits 16-bit × 16-bit sur un réseau de 256 neurones. C'est délibérément conservatif (pire cas théorique). En pratique, les valeurs réelles sont 3-4× plus petites → on peut souvent réduire à ap_fixed&lt;18,7&gt; après profiling → économies significatives en LUTs.</p>
+  </div>
+
+  <hr class="sep">
+  <h3>④ HGQ — High Granularity Quantization (Part 4.1)</h3>
+  <p>HGQ va au-delà du niveau 'name' : il assigne une précision à <strong>chaque poids individuel</strong>, basée sur son importance pour le résultat final. Les poids importants gardent plus de bits, les poids marginaux en reçoivent moins.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <p><strong>Entraînement HGQ</strong> : le réseau apprend simultanément les valeurs de poids ET leur précision optimale. Objectif : minimiser les BOPs (Bit Operations) = mesure de l'utilisation hardware totale.</p>
+        <pre><span class="cm"># Cible : 6500 BOPs ≈ 6500 LUTs équivalents</span>
+<span class="cm"># (DSPs comptent pour plus de LUTs — pondérés)</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <p><strong>Proxy Model obligatoire</strong> : HLS4ML ne comprend pas HGQ directement. Il faut créer un Proxy Model — un émulateur bit-exact du modèle HGQ — avec des types ap_fixed fixes dérivés des précisions HGQ.</p>
+        <pre><span class="kw">from</span> hgq.proxy <span class="kw">import</span> to_proxy_model
+proxy = <span class="fn">to_proxy_model</span>(hgq_model, cover_range=<span class="num">1.0</span>)
+<span class="cm"># cover_range : facteur de sécurité</span>
+<span class="cm"># 1.0 = couvre 100% des valeurs vues pendant trace_minmax</span>
+<span class="cm"># Trop bas → overflow silencieux → accuracy effondrée (ton cas Part 4.1)</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <p><strong>Conversion hls4ml du Proxy</strong> : le Proxy se comporte comme un modèle Keras normal → hls4ml peut le convertir directement.</p>
+        <pre>hls_model = hls4ml.converters.<span class="fn">convert_from_keras_model</span>(
+    proxy, output_dir=<span class="st">'model_hgq'</span>,
+    part=<span class="st">'xc7z020clg400-1'</span>, backend=<span class="st">'Vitis'</span>
+)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="box red">
+    <div class="box-t">Pourquoi Part 4.1 échoue — accuracy 46.7%</div>
+    <p>Le <code>cover_range=1.0</code> était insuffisant : certaines valeurs vues pendant l'inférence réelle dépassaient la plage couverte pendant le <code>trace_minmax</code> → overflow silencieux → ~30% des samples produisent des résultats faux → accuracy 46.7% au lieu de 75.9%. Solution : augmenter le cover_range (ex: 1.2 ou 1.5) ou réduire la cible BOPs.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-latii')">← Latency & II</button>
+    <button class="nav-btn" onclick="go('th-env')">Suivant : Environnement →</button>
+  </div>
+</section>
+
+<!-- ══ TH: ENV ══ -->
+<section id="th-env" class="section">
+  <h2>2.3 — Environnement & Setup</h2>
+  <p class="subtitle">Software-Stack, Conda, et pourquoi Linux est obligatoire</p>
+
+  <h3>2.3.1 — Software-Stack et Conda-Umgebung</h3>
+  <p>HLS4ML requiert une combinaison très spécifique de versions logicielles. La moindre incompatibilité peut bloquer l'ensemble de la chaîne. La solution officielle : utiliser un <strong>environnement Conda isolé</strong> fourni par le tutoriel.</p>
+
+  <div class="card blue">
+    <div class="card-title">Commandes d'installation</div>
+    <pre><span class="cm"># Cloner le tutoriel</span>
+git clone https://github.com/fastmachinelearning/hls4ml-tutorial
+<span class="kw">cd</span> hls4ml-tutorial
+
+<span class="cm"># Créer l'environnement Conda depuis le fichier fourni</span>
+conda env create -f environment.yml
+
+<span class="cm"># Activer l'environnement</span>
+conda activate hls4ml-tutorial
+
+<span class="cm"># Packages supplémentaires nécessaires</span>
+pip install conifer        <span class="cm"># Part 5 — BDT sur FPGA</span>
+<span class="cm"># Julia requis pour backend Conifer-Julia (optionnel)</span></pre>
+  </div>
+
+  <h3>Contenu du environment.yml (extrait)</h3>
+  <pre>name: hls4ml-tutorial
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - tensorflow==2.x       <span class="cm"># entraînement des modèles Keras</span>
+  - qkeras                 <span class="cm"># quantisation QKeras (Part 4)</span>
+  - hls4ml                 <span class="cm"># le framework principal</span>
+  - conifer                <span class="cm"># BDT to FPGA (Part 5)</span>
+  - tensorflow-model-optimization  <span class="cm"># pruning (Parts 3, 4)</span>
+  - matplotlib, numpy, scikit-learn, uproot</pre>
+
+  <h3>Stack logiciel complet — de Python au bitstream</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Couche</th><th>Outil</th><th>Rôle</th><th>Fourni par</th></tr>
+    <tr><td>1 — ML</td><td>TensorFlow/Keras</td><td>Entraînement du réseau neuronal</td><td>Google</td></tr>
+    <tr><td>1 — ML</td><td>QKeras</td><td>Quantisation pendant l'entraînement</td><td>Google</td></tr>
+    <tr><td>1 — ML</td><td>TF Model Opt.</td><td>Pruning (Magnitude Pruning)</td><td>Google</td></tr>
+    <tr><td>2 — Conversion</td><td>hls4ml</td><td>Keras → code C++ HLS</td><td>Fast ML Lab (CERN)</td></tr>
+    <tr><td>3 — Synthèse HLS</td><td>Vitis HLS 2022</td><td>C++ → RTL (VHDL/Verilog)</td><td>Xilinx/AMD</td></tr>
+    <tr><td>4 — Implementation</td><td>Vivado 2022</td><td>RTL → Netlist → Bitstream</td><td>Xilinx/AMD</td></tr>
+    <tr><td>5 — Deployment</td><td>PYNQ Framework</td><td>Charger bitstream, driver Python</td><td>Xilinx/AMD</td></tr>
+  </table>
+  </div>
+
+  <h3>2.3.2 — Pourquoi Linux est obligatoire</h3>
+  <div class="card amber">
+    <div class="card-title">Les raisons techniques de choisir Ubuntu 22.04 LTS</div>
+    <p><strong>① Xilinx toolchain native Linux :</strong> Vivado et Vitis HLS sont développés et optimisés pour Linux. Sous Windows, beaucoup de scripts d'automatisation ne fonctionnent pas ou génèrent des erreurs de chemins.</p>
+    <p style="margin-top:8px"><strong>② Variables d'environnement :</strong> HLS4ML doit appeler Vivado/Vitis directement depuis Python. Il utilise le <code>source</code> de Bash pour charger les variables :</p>
+    <pre>source /opt/Xilinx/Vivado/2022.1/settings64.sh
+<span class="cm"># → charge $XILINX_VIVADO, $PATH, $LD_LIBRARY_PATH dans la session</span></pre>
+    <p style="margin-top:8px"><strong>③ Chemins de fichiers :</strong> Vivado génère des centaines de fichiers dans des sous-dossiers profonds. Sous Windows, les chemins dépassent souvent la limite MAX_PATH (260 caractères) → erreurs de synthèse difficiles à diagnostiquer.</p>
+    <p style="margin-top:8px"><strong>④ Packages Python natifs :</strong> Certaines dépendances (uproot, awkward-array pour les données HEP) ont des roues binaires Linux uniquement. Conda gère ça proprement sous Linux.</p>
+  </div>
+
+  <h3>Compatibilité PYNQ-Z1 — ajout manuel des Board Files</h3>
+  <p>hls4ml et Conifer supportent officiellement le PYNQ-Z2 (même chip, autre board). Pour le PYNQ-Z1, il faut ajouter manuellement les Board Definition Files :</p>
+  <pre><span class="cm"># Télécharger les board files PYNQ-Z1</span>
+<span class="cm"># Source : https://discuss.pynq.io/t/addition-of-pynq-z1-board-into-vivado/3556</span>
+
+<span class="cm"># Copier dans le répertoire Vivado</span>
+<span class="kw">cp</span> -r pynq-z1/ /opt/Xilinx/Vivado/2022.1/data/boards/board_files/
+
+<span class="cm"># Pour Conifer (Part 5), modifier le mapping de boards :</span>
+<span class="cm"># conifer/backends/xilinxhls/board_map.py → ajouter 'pynq-z1'</span>
+
+<span class="cm"># Vérifier que le part est reconnu</span>
+<span class="cm"># part='xc7z020clg400-1' → même chip que PYNQ-Z2 → synthèse identique</span></pre>
+
+  <div class="box teal">
+    <div class="box-t">Résumé — Checklist avant de commencer</div>
+    <p>✅ Ubuntu 22.04 LTS installé<br>
+    ✅ Vivado/Vitis HLS 2022.1 installé dans /opt/Xilinx/<br>
+    ✅ Conda installé, environment.yml exécuté<br>
+    ✅ <code>source settings64.sh</code> dans chaque session terminal<br>
+    ✅ Board files PYNQ-Z1 ajoutés dans Vivado<br>
+    ✅ Julia installé (si Part 5 backend Julia requis)<br>
+    ✅ Conifer board map mis à jour pour PYNQ-Z1</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-gran')">← Granularité</button>
+    <button class="nav-btn" onclick="go('prof-quoi')">Suivant : Le Profiling →</button>
+  </div>
+</section>
+
+<!-- ══ TH: MULTIPLICATIONS ══ -->
+<section id="th-muls" class="section">
+  <h2>Multiplications par couche & DSPs</h2>
+  <p class="subtitle">La seule formule à retenir — et sa vérification sur chaque Part du PDF</p>
+
+  <h3>① Pourquoi une couche Dense fait des multiplications</h3>
+  <p>Une couche Dense implémente un <strong>produit matrice-vecteur</strong>. Chaque neurone de sortie j calcule la somme de tous les produits poids × entrée :</p>
+  <div class="formula">sortie[j] = Σᵢ ( poids[j][i] × entrée[i] ) + biais[j]</div>
+  <p>Chaque terme <code>poids[j][i] × entrée[i]</code> est <strong>1 multiplication</strong> → utilise un DSP. L'addition <code>+ biais[j]</code> est une simple addition → utilise des LUTs, pas de DSP.</p>
+
+  <div class="card blue">
+    <div class="card-title">Exemple minimal — Dense(3 → 2) : 3 entrées, 2 neurones de sortie</div>
+    <div style="background:var(--surface2);border-radius:6px;padding:12px;font-family:var(--mono);font-size:12px;line-height:2.2">
+      <div>sortie[0] = <span style="color:var(--red)">w[0][0]×x₀</span> + <span style="color:var(--red)">w[0][1]×x₁</span> + <span style="color:var(--red)">w[0][2]×x₂</span> + b[0] &nbsp;<span style="color:var(--amber)">← 3 multiplications</span></div>
+      <div>sortie[1] = <span style="color:var(--red)">w[1][0]×x₀</span> + <span style="color:var(--red)">w[1][1]×x₁</span> + <span style="color:var(--red)">w[1][2]×x₂</span> + b[1] &nbsp;<span style="color:var(--amber)">← 3 multiplications</span></div>
+    </div>
+    <div class="formula" style="margin-top:10px">Total = 2 sorties × 3 entrées = 6 multiplications = N_sorties × N_entrées</div>
+  </div>
+
+  <h3>② La formule exacte du nombre de multiplications</h3>
+  <div class="formula" style="font-size:17px">N_muls (couche Dense) = N_entrées × N_sorties</div>
+  <p>C'est le nombre d'éléments dans la matrice de poids. Chaque élément fait exactement 1 multiplication. C'est <strong>exact</strong>, pas une approximation.</p>
+  <div class="box blue">
+    <div class="box-t">Couches sans multiplication (0 DSP)</div>
+    <p><strong>ReLU / relu</strong> : max(0, x) → comparaison simple → LUTs, 0 DSP<br>
+    <strong>BatchNorm</strong> : HLS4ML la fusionne dans la Dense précédente → 0 DSP supplémentaire<br>
+    <strong>Softmax</strong> : exp() → implémenté via LUT-tables → quasiment 0 DSP<br>
+    → Seules les couches <strong>Dense et Conv</strong> comptent pour les DSPs.</p>
+  </div>
+
+  <h3>③ Ton réseau — calcul couche par couche</h3>
+  <p>Architecture : 16 features → fc1(64) → relu → fc2(32) → relu → fc3(32) → relu → output(5) → softmax</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Couche</th><th>N_entrées</th><th>N_sorties</th><th>Calcul exact</th><th>N_muls</th><th>Poids</th><th>Biais</th><th>Paramètres</th></tr>
+    <tr>
+      <td class="mono">fc1</td><td>16</td><td>64</td>
+      <td style="font-family:var(--mono);font-size:12px">16 × 64</td>
+      <td class="warn" style="font-weight:700">1 024</td>
+      <td style="font-size:11px;color:var(--text3)">1 024</td>
+      <td style="font-size:11px;color:var(--text3)">64</td>
+      <td style="font-size:11px;color:var(--text2)">1 088</td>
+    </tr>
+    <tr>
+      <td class="mono">relu1</td>
+      <td colspan="3" style="color:var(--text3);font-style:italic">max(0, x) — pas de multiplication</td>
+      <td class="ok">0</td><td colspan="3" style="color:var(--text3)">0</td>
+    </tr>
+    <tr>
+      <td class="mono">fc2</td><td>64</td><td>32</td>
+      <td style="font-family:var(--mono);font-size:12px">64 × 32</td>
+      <td class="bad" style="font-weight:700">2 048</td>
+      <td style="font-size:11px;color:var(--text3)">2 048</td>
+      <td style="font-size:11px;color:var(--text3)">32</td>
+      <td style="font-size:11px;color:var(--text2)">2 080</td>
+    </tr>
+    <tr>
+      <td class="mono">relu2</td>
+      <td colspan="3" style="color:var(--text3);font-style:italic">pas de multiplication</td>
+      <td class="ok">0</td><td colspan="3" style="color:var(--text3)">0</td>
+    </tr>
+    <tr>
+      <td class="mono">fc3</td><td>32</td><td>32</td>
+      <td style="font-family:var(--mono);font-size:12px">32 × 32</td>
+      <td class="warn" style="font-weight:700">1 024</td>
+      <td style="font-size:11px;color:var(--text3)">1 024</td>
+      <td style="font-size:11px;color:var(--text3)">32</td>
+      <td style="font-size:11px;color:var(--text2)">1 056</td>
+    </tr>
+    <tr>
+      <td class="mono">relu3</td>
+      <td colspan="3" style="color:var(--text3);font-style:italic">pas de multiplication</td>
+      <td class="ok">0</td><td colspan="3" style="color:var(--text3)">0</td>
+    </tr>
+    <tr>
+      <td class="mono">output</td><td>32</td><td>5</td>
+      <td style="font-family:var(--mono);font-size:12px">32 × 5</td>
+      <td class="ok" style="font-weight:700">160</td>
+      <td style="font-size:11px;color:var(--text3)">160</td>
+      <td style="font-size:11px;color:var(--text3)">5</td>
+      <td style="font-size:11px;color:var(--text2)">165</td>
+    </tr>
+    <tr>
+      <td class="mono">softmax</td>
+      <td colspan="3" style="color:var(--text3);font-style:italic">exp() via LUT — ~0 DSP</td>
+      <td class="ok">~0</td><td colspan="3" style="color:var(--text3)">0</td>
+    </tr>
+    <tr style="background:var(--surface2)">
+      <td colspan="3" style="font-weight:700;font-size:14px">TOTAL</td>
+      <td style="font-family:var(--mono);font-size:12px">1024+2048+1024+160</td>
+      <td class="bad" style="font-size:20px;font-weight:700;font-family:var(--mono)">4 256</td>
+      <td colspan="2"></td>
+      <td style="font-weight:600;font-size:12px">4 389 params</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="box amber">
+    <div class="box-t">Pourquoi fc2 coûte deux fois plus que fc1 et fc3 ?</div>
+    <p><strong>fc1</strong> : 16 entrées (les features originaux) × 64 sorties = 1 024<br>
+    <strong>fc2</strong> : 64 entrées (sorties de fc1 — le réseau s'est élargi) × 32 sorties = 2 048<br>
+    <strong>fc3</strong> : 32 entrées × 32 sorties = 1 024<br>
+    <strong>output</strong> : 32 entrées × 5 classes = 160 seulement<br><br>
+    fc2 est la couche la plus coûteuse parce qu'elle reçoit les 64 sorties de fc1. C'est fc2 qui bénéficie le plus d'un RF élevé ou d'une réduction de bits.</p>
+  </div>
+
+  <h3>④ De N_muls aux DSPs — la formule complète</h3>
+
+  <div class="card purple">
+    <div class="card-title">Formule approchée (les 3 facteurs)</div>
+    <div class="formula" style="font-size:15px;line-height:2.2">
+      DSPs ≈ ⌈ N_muls × (1 − s) × α(W) ÷ RF ⌉ + β<br>
+      <span style="font-size:11px;font-weight:400;color:var(--text2)">N_muls = Σ (N_entrées × N_sorties) sur toutes les couches Dense &nbsp;[exact]</span><br>
+      <span style="font-size:11px;font-weight:400;color:var(--text2)">s = fraction de poids mis à zéro par pruning &nbsp;[exact]</span><br>
+      <span style="font-size:11px;font-weight:400;color:var(--text2)">α(W) = DSPs par multiplication selon W bits &nbsp;[empirique Vivado]</span><br>
+      <span style="font-size:11px;font-weight:400;color:var(--text2)">RF = ReuseFactor &nbsp;[exact diviseur]</span><br>
+      <span style="font-size:11px;font-weight:400;color:var(--text2)">β = overhead HLS (accumulateurs + AXI + contrôle) &nbsp;[variable]</span>
+    </div>
+  </div>
+
+  <h3>α(W) — DSPs par multiplication selon la précision</h3>
+  <p>Le DSP48E1 du Zynq-7020 fait <code>P = A×B + C</code> avec A sur <strong>25 bits</strong> et B sur <strong>18 bits</strong>. Une multiplication 16-bit × 16-bit (W=16) tient donc dans <strong>1 seul DSP</strong> (16 &lt; 25 et 16 &lt; 18). La valeur α est <strong>empirique</strong> — déduite des résultats de synthèse Vivado du PDF, pas calculée analytiquement.</p>
+
+  <div class="box blue">
+    <div class="box-t">Pourquoi α(16) ≈ 0.52 et pas 1.0 si 1 mul = 1 DSP ?</div>
+    <p>Théoriquement, 1 multiplication 16-bit = 1 DSP48E1. Pour 4256 muls en RF=1, on attendrait 4256 DSPs. Mais le PDF dit 2198 — soit α ≈ 0.52. Pourquoi ?</p>
+    <p style="margin-top:6px">Le DSP48E1 fait <code>P = A×B + C</code> : la <strong>multiplication ET l'accumulation</strong> dans le même bloc. Cela signifie que chaque DSP fait à la fois le produit poids×entrée ET ajoute le résultat à la somme partielle — deux opérations pour le prix d'une. Vivado/Vitis HLS exploite ce mécanisme en cascade : <strong>1 DSP ≈ 2 multiplications pipelinées</strong>, d'où α ≈ 0.52 ≈ 1/2.</p>
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Précision W</th><th>Opérandes (A×B)</th><th>DSPs requis par mul (théorie)</th><th>α(W) empirique PDF</th><th>Explication</th></tr>
+    <tr><td class="mono">W ≤ 6 bits</td><td>6×6 → tient dans LUTs</td><td class="ok">0 DSP</td><td class="ok"><strong>≈ 0.05</strong></td><td>Multiplications en LUTs. Les ~5% restants viennent des accumulateurs et overhead.</td></tr>
+    <tr><td class="mono">W = 8 bits</td><td>8×8 &lt; 25×18 → 1 DSP</td><td class="ok">1 DSP</td><td class="ok"><strong>≈ 0.30</strong></td><td>Cascade accumulate : 1 DSP ≈ 3–4 muls 8-bit pipelinées.</td></tr>
+    <tr><td class="mono">W = 12 bits</td><td>12×12 &lt; 25×18 → 1 DSP</td><td class="warn">1 DSP</td><td class="warn"><strong>≈ 0.42</strong></td><td>1 DSP ≈ 2–3 muls 12-bit pipelinées.</td></tr>
+    <tr><td class="mono">W = 16 bits</td><td>16×16 &lt; 25×18 → 1 DSP</td><td class="warn">1 DSP théorique</td><td class="bad"><strong>≈ 0.52</strong></td><td>Mesuré : 2198 ÷ 4256 = 0.517. Le DSP48E1 exploite A×B+C → 1 DSP ≈ 2 muls. D'où le facteur ½.</td></tr>
+  </table>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">Conséquence directe : 220 DSPs = 220 × 2 ≈ 440 multiplications 16-bit par cycle</div>
+    <p>Avec le mécanisme cascade du DSP48E1, le PYNQ-Z1 peut effectuer environ <strong>440 multiplications 16-bit par cycle d'horloge</strong> (220 DSPs × 2 muls/DSP grâce à A×B+C). Pour faire rentrer 4256 multiplications, il faut donc un RF minimum de ⌈4256/440⌉ ≈ 10 — ce qui explique pourquoi RF=2 en Part 2 ne suffit pas du tout (réduction marginale) alors que RF=64 en Part 7 fonctionne parfaitement.</p>
+  </div>
+
+  <h3>β — overhead HLS (accumulateurs, contrôle, interfaces)</h3>
+  <p>HLS4ML génère automatiquement des accumulateurs internes pour chaque couche Dense. Ces accumulateurs doivent être assez larges pour ne pas déborder → ils utilisent des DSPs supplémentaires au-delà des multiplications elles-mêmes. β diminue quand RF augmente (moins de circuits parallèles = moins d'accumulateurs).</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Contexte</th><th>β estimé</th><th>Source</th></tr>
+    <tr><td>RF=1, W=16, pas de pruning (Part 1)</td><td>β ≈ 0</td><td>Les muls dominent largement, β négligeable</td></tr>
+    <tr><td>RF=1, W=6, pruning 75% (Part 4)</td><td>β ≈ 69 DSPs</td><td>122 total − ⌈1064 × 0.05 / 1⌉ = 122 − 53 = 69</td></tr>
+    <tr><td>RF=64, W=6, pruning 75% (Part 7)</td><td>β ≈ 8 DSPs</td><td>9 total − ⌈1064 × 0.05 / 64⌉ = 9 − 1 = 8</td></tr>
+  </table>
+  </div>
+
+  <h3>⑤ Vérification sur chaque Part du PDF</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Part</th><th>N_muls_base</th><th>s</th><th>N_muls_actives</th><th>α(W)</th><th>RF</th><th>⌈muls×α÷RF⌉</th><th>+β</th><th>Total estimé</th><th>PDF réel</th><th>Écart</th></tr>
+    <tr>
+      <td class="mono">Part 1</td><td>4 256</td><td>0</td><td>4 256</td>
+      <td>0.52 (16-bit)</td><td>1</td>
+      <td style="font-family:var(--mono)">⌈2213⌉</td><td>≈0</td>
+      <td class="bad">~2 213</td><td class="bad"><strong>2 198</strong></td>
+      <td class="ok">−0.7%</td>
+    </tr>
+    <tr>
+      <td class="mono">Part 2 RF=1</td><td>4 256</td><td>0</td><td>4 256</td>
+      <td>0.52</td><td>1</td>
+      <td style="font-family:var(--mono)">⌈2213⌉</td><td>≈0</td>
+      <td class="bad">~2 213</td><td class="bad"><strong>~2198</strong></td>
+      <td class="ok">≈0%</td>
+    </tr>
+    <tr>
+      <td class="mono">Part 2 RF=2</td><td>4 256</td><td>0</td><td>4 256</td>
+      <td>0.52</td><td>2</td>
+      <td style="font-family:var(--mono)">⌈1107⌉</td><td>+930</td>
+      <td class="bad">~2 037</td><td class="bad"><strong>2 037</strong></td>
+      <td class="ok">0%</td>
+    </tr>
+    <tr>
+      <td class="mono">Part 3</td><td>4 256</td><td>0.50</td><td>2 128</td>
+      <td>0.52</td><td>1</td>
+      <td style="font-family:var(--mono)">⌈1107⌉</td><td>−198</td>
+      <td class="bad">~909</td><td class="bad"><strong>909</strong></td>
+      <td class="ok">0%</td>
+    </tr>
+    <tr style="background:rgba(29,158,117,0.06)">
+      <td class="mono">Part 4</td><td>4 256</td><td>0.75</td><td>1 064</td>
+      <td>0.05 (6-bit)</td><td>1</td>
+      <td style="font-family:var(--mono)">⌈53⌉</td><td>+69</td>
+      <td class="ok">~122</td><td class="ok"><strong>122</strong></td>
+      <td class="ok">0%</td>
+    </tr>
+    <tr style="background:rgba(29,158,117,0.06)">
+      <td class="mono">Part 7</td><td>4 256</td><td>0.75</td><td>1 064</td>
+      <td>0.05 (6-bit)</td><td>64</td>
+      <td style="font-family:var(--mono)">⌈1⌉</td><td>+8</td>
+      <td class="ok">~9</td><td class="ok"><strong>9</strong></td>
+      <td class="ok">0%</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="box red">
+    <div class="box-t">⚠ Cas spécial Part 2 RF=2 — β = +930 DSPs</div>
+    <p>La formule donne ⌈4256 × 0.52 / 2⌉ = 1107, mais le PDF dit 2037. La différence de 930 DSPs vient de l'overhead des accumulateurs. Avec <code>granularity='model'</code> et RF=2, HLS4ML génère des accumulateurs de type <code>ap_fixed&lt;26,11&gt;</code> (très large, calculé pour le pire cas) qui consomment énormément de DSPs — et ce coût d'accumulateurs n'est pas divisé par le RF. C'est le vrai problème de la Part 2 : le RF réduit les multiplications mais pas les accumulateurs conservatifs.</p>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">Résumé — comment réduire les DSPs</div>
+    <p>1. <strong>Réduire N_muls</strong> → changer l'architecture (moins de neurones) → impact sur accuracy, difficile<br>
+    2. <strong>Augmenter s (pruning)</strong> → multiplier par (1−s) → Part 3 : ×0.5, Part 4 : ×0.25<br>
+    3. <strong>Réduire α via W (précision)</strong> → QKeras 6-bit : α = 0.05 au lieu de 0.52 → ÷10<br>
+    4. <strong>Augmenter RF</strong> → diviser par RF → Part 7 : ÷64<br><br>
+    <strong>La combinaison 2+3 (Part 4) est la plus efficace</strong> : 4256 × 0.25 × 0.05 ÷ 1 = 53 muls-DSPs seulement. C'est QKeras + pruning qui "casse" le problème, pas le RF seul.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('th-env')">← Environnement</button>
+    <button class="nav-btn" onclick="go('prof-quoi')">Suivant : Le Profiling →</button>
+  </div>
+</section>
+
+<!-- ══ PROFILING QUOI ══ -->
+<section id="prof-quoi" class="section">
+  <h2>Pourquoi 4 graphiques ?</h2>
+  <p class="subtitle"><code>numerical(model, hls_model, X)</code> produit exactement 4 graphiques car tu fournis les 3 arguments</p>
+
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">① Poids — avant optimisation</div>
+      <p><strong>Source :</strong> modèle Keras original (float32).<br><strong>Utilité :</strong> référence de base. Ce que le CPU stocke en virgule flottante.<br><strong>Zone grise :</strong> oui (depuis hls_model).</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">② Poids — après optimisation ← LE PLUS IMPORTANT</div>
+      <p><strong>Source :</strong> hls_model (après fusions HLS4ML — ex: BatchNorm).<br><strong>Utilité :</strong> c'est sur celui-ci que tu choisis ap_fixed.<br><strong>Dans ton cas :</strong> identique à ① car pas de BatchNorm.</p>
+    </div>
+    <div class="card teal">
+      <div class="card-title">③ Activations — avant optimisation</div>
+      <p><strong>Source :</strong> sorties de chaque couche Keras sur X_test.<br><strong>Utilité :</strong> voir ce que produit le réseau en float32 couche par couche.</p>
+    </div>
+    <div class="card green">
+      <div class="card-title">④ Activations — après optimisation ← COMPARER AVEC ③</div>
+      <p><strong>Source :</strong> sorties du hls_model simulé.<br><strong>Utilité :</strong> détecter les dégradations dues à la quantisation.</p>
+    </div>
+  </div>
+
+  <div class="box amber">
+    <div class="box-t">Ton cas : avant ≈ après — c'est normal !</div>
+    <p>Ton réseau n'a pas de BatchNorm. HLS4ML n'a rien à fusionner → distributions quasi-identiques avant et après. Si tu avais des BatchNorm, elles auraient été absorbées dans les couches Dense et les distributions auraient changé — c'est pourquoi la doc dit toujours "utiliser les graphiques APRÈS pour choisir ap_fixed".</p>
+  </div>
+
+  <h3>Ce qui apparaît selon les arguments fournis à numerical()</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Arguments</th><th>Graphiques produits</th><th>Zone grise visible ?</th></tr>
+    <tr><td>model seulement</td><td>Poids uniquement</td><td class="bad">Non</td></tr>
+    <tr><td>model + hls_model</td><td>Poids avant + après</td><td class="ok">Oui</td></tr>
+    <tr><td>model + X</td><td>Poids + Activations</td><td class="bad">Non</td></tr>
+    <tr><td class="ok">model + hls_model + X ✓ (ton cas)</td><td>Les 4 complets</td><td class="ok">Oui</td></tr>
+  </table>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('workflow')">← Workflow</button>
+    <button class="nav-btn" onclick="go('prof-3elem')">Suivant : Les 3 éléments →</button>
+  </div>
+</section>
+
+<!-- ══ PROFILING 3 ELEMENTS ══ -->
+<section id="prof-3elem" class="section">
+  <h2>Les 3 éléments du graphique de profiling</h2>
+  <p class="subtitle">Chaque ligne = une couche. Chaque ligne contient exactement 3 éléments superposés.</p>
+
+  <div class="prof-wrap">
+    <div class="prof-title">Exemple — fc1/weights (lecture annotée)</div>
+    <div class="prof-row">
+      <div class="prof-lbl">fc1/w</div>
+      <div class="prof-track" style="height:28px">
+        <div class="p-grey" style="left:36%;width:51%;top:2px;height:24px;border-radius:4px"></div>
+        <div class="p-seg" style="left:4%;width:83%;top:12px"></div>
+        <div class="p-cap" style="left:4%;top:7px"></div>
+        <div class="p-cap" style="left:87%;top:7px"></div>
+        <div class="p-box" style="left:58%;width:20%;top:5px;height:18px"></div>
+        <div class="p-med" style="left:69%;top:5px;height:18px"></div>
+      </div>
+    </div>
+    <div class="prof-axis"><span>2⁻²²</span><span>2⁻¹⁹</span><span>2⁻¹⁶</span><span>2⁻¹³</span><span>2⁻¹⁰</span><span>2⁻⁷</span><span>2⁻⁴</span><span>2⁻¹</span></div>
+    <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:6px">← petites valeurs ——————————————————————— grandes valeurs →</p>
+  </div>
+
+  <div class="elem3">
+    <div class="e-card e-seg">
+      <div class="e-title">② Le segment (moustaches)</div>
+      <div class="e-body">La ligne horizontale + les 2 petits traits verticaux aux extrémités.<br><br><strong>Cap gauche</strong> = valeur min des poids.<br><strong>Cap droit</strong> = valeur max des poids.<br><br>Fixé par ton modèle entraîné — tu ne peux pas le changer sans réentraîner.</div>
+    </div>
+    <div class="e-card e-box">
+      <div class="e-title">③ La boîte (IQR)</div>
+      <div class="e-body">Le rectangle bleu foncé.<br><br>Montre où se concentrent <strong>50% des poids</strong> (Q1 → Q3).<br><br>Le trait vertical au milieu = <strong>médiane</strong>.<br><br>Boîte étroite = poids très regroupés. Aussi fixé par le modèle.</div>
+    </div>
+    <div class="e-card e-grey">
+      <div class="e-title">① La zone grise</div>
+      <div class="e-body">Le rectangle vert semi-transparent derrière.<br><br>= <strong>ce que ton ap_fixed&lt;N,I&gt; peut stocker</strong> sur le FPGA.<br><br>C'est la seule chose que tu contrôles : changer N ou I déplace/redimensionne cette zone.</div>
+    </div>
+  </div>
+
+  <div class="box red">
+    <div class="box-t">⚠ LA RÈGLE FONDAMENTALE</div>
+    <p>La zone grise <strong>DOIT couvrir le cap DROIT</strong> du segment. Si le cap droit dépasse la zone grise → <strong>overflow/saturation</strong> → le réseau produit des résultats faux même si l'accuracy Keras était parfaite. Le cap gauche non couvert = perte de précision fine, souvent acceptable.</p>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('prof-quoi')">← Pourquoi 4 graphiques ?</button>
+    <button class="nav-btn" onclick="go('prof-lire')">Suivant : Comment lire →</button>
+  </div>
+</section>
+
+<!-- ══ PROFILING LIRE ══ -->
+<section id="prof-lire" class="section">
+  <h2>Comment lire le profiling</h2>
+  <p class="subtitle">4 questions à poser dans l'ordre, pour chaque ligne du graphique</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <p><strong>Lire le cap droit du segment — trouver "a" sur l'axe X</strong></p>
+        <p>L'axe X est en <strong>puissances de 2</strong> : 2⁻¹⁹, 2⁻¹⁵, …, 2⁻¹, 2⁰, 2¹, etc. Le cap droit (moustache droite) se trouve à <strong>2<sup>a</sup></strong> pour une certaine valeur de <em>a</em>. Cette valeur est la magnitude maximale de tes poids/activations.</p>
+        <div class="formula">I nécessaire = a + 1</div>
+        <p>Explication : pour représenter 2<sup>a</sup> sans overflow, on a besoin que 2<sup>(I−1)</sup> ≥ 2<sup>a</sup>, donc I−1 ≥ a, donc <strong>I ≥ a+1</strong>.</p>
+        <div class="tbl-wrap"><table>
+          <tr><th>Cap droit visible</th><th>a</th><th>I = a+1</th><th>Type suggéré</th></tr>
+          <tr><td class="mono">2⁻² = 0.25</td><td>−2</td><td>−1 → I=1 min</td><td>ap_fixed&lt;8,1&gt;</td></tr>
+          <tr><td class="mono">2⁻¹ = 0.5 (tes poids)</td><td>−1</td><td>0 → I=1 min</td><td class="ok">ap_fixed&lt;8,1&gt;</td></tr>
+          <tr><td class="mono">2⁰ = 1</td><td>0</td><td>1 → I=2</td><td>ap_fixed&lt;8,2&gt;</td></tr>
+          <tr><td class="mono">2¹ = 2</td><td>1</td><td>2 → I=3</td><td>ap_fixed&lt;10,3&gt;</td></tr>
+          <tr><td class="mono">2² = 4 (tes activations)</td><td>2</td><td>3 → I=4</td><td class="ok">ap_fixed&lt;12,4&gt;</td></tr>
+          <tr><td class="mono">2⁵ = 32 (défaut &lt;16,6&gt;)</td><td>5</td><td>6 → I=6</td><td>ap_fixed&lt;16,6&gt;</td></tr>
+        </table></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <p><strong>La zone grise couvre-t-elle ce cap droit ?</strong></p>
+        <div class="box teal"><p>✅ <strong>OUI</strong> → pas de risque de saturation. Tu peux essayer de réduire N pour économiser des ressources.</p></div>
+        <div class="box red"><p>❌ <strong>NON</strong> → overflow garanti → augmenter I immédiatement. Sinon les valeurs seront tronquées → résultats faux.</p></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <p><strong>Où est le cap gauche ? Est-il couvert ?</strong></p>
+        <p>Si non couvert → les très petits poids sont arrondis à zéro. Souvent acceptable. À confirmer par C Simulation en vérifiant que l'accuracy ne chute pas.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <p><strong>Comparer graphique ③ (activations avant) avec ④ (après)</strong></p>
+        <p>Si quasi-identiques → la quantisation ne dégrade pas. Si une couche change drastiquement → problème de précision sur cette couche → augmenter N spécifiquement pour elle grâce au Trace.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="box teal">
+    <div class="box-t">Stratégie officielle du tutoriel HLS4ML</div>
+    <p>① Commencer avec <code>ap_fixed&lt;16,6&gt;</code> (défaut) pour tout le réseau.<br>② Profiler → vérifier que toutes les zones grises couvrent les caps droits.<br>③ Réduire N couche par couche en validant l'accuracy à chaque étape.<br>④ Ne jamais commencer par une précision trop faible — toujours descendre progressivement.<br>⑤ Ou mieux : utiliser QKeras (Part 4) pour quantiser pendant l'entraînement.</p>
+  </div>
+
+  <h3>Comment utiliser le Trace pour localiser les problèmes</h3>
+  <pre><span class="kw">from</span> hls4ml.model.profiling <span class="kw">import</span> get_ymodel_keras
+
+hls_model.<span class="fn">compile</span>()
+hls_trace   = hls_model.<span class="fn">trace</span>(X_test[:<span class="num">1000</span>])   <span class="cm"># sorties HLS par couche</span>
+keras_trace = <span class="fn">get_ymodel_keras</span>(model, X_test[:<span class="num">1000</span>])  <span class="cm"># sorties Keras par couche</span>
+
+<span class="kw">for</span> layer <span class="kw">in</span> hls_trace.keys():
+    diff = np.<span class="fn">max</span>(np.<span class="fn">abs</span>(hls_trace[layer] - keras_trace[layer]))
+    <span class="fn">print</span>(<span class="st">f"{layer}: diff max = {diff:.5f}"</span>)
+<span class="cm"># Si diff > 0.1 pour une couche → précision insuffisante sur cette couche</span></pre>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('prof-3elem')">← Les 3 éléments</button>
+    <button class="nav-btn" onclick="go('prof-tes')">Suivant : Tes résultats →</button>
+  </div>
+</section>
+
+<!-- ══ PROFILING TES RESULTATS ══ -->
+<section id="prof-tes" class="section">
+  <h2>Tes graphiques analysés</h2>
+  <p class="subtitle">Analyse complète de tes 4 sorties de profiling — réseau fc1→relu→fc2→relu→fc3→relu→output→softmax</p>
+
+  <h3>① + ② Poids (avant ≈ après — normal, pas de BatchNorm)</h3>
+  <div class="prof-wrap">
+    <div class="prof-title">Distribution des poids — analyse couche par couche</div>
+    <div class="prof-row"><div class="prof-lbl">fc1/w</div><div class="prof-track"><div class="p-grey" style="left:36%;width:51%"></div><div class="p-seg" style="left:3%;width:82%"></div><div class="p-cap" style="left:3%"></div><div class="p-cap" style="left:85%"></div><div class="p-box" style="left:58%;width:20%"></div><div class="p-med" style="left:69%"></div></div><span class="badge b-ok" style="margin-left:8px">OK</span></div>
+    <div class="prof-row"><div class="prof-lbl">fc2/w</div><div class="prof-track"><div class="p-grey" style="left:36%;width:51%"></div><div class="p-seg" style="left:1%;width:84%"></div><div class="p-cap" style="left:1%"></div><div class="p-cap" style="left:85%"></div><div class="p-box" style="left:50%;width:24%"></div><div class="p-med" style="left:62%"></div></div><span class="badge b-ok" style="margin-left:8px">OK</span></div>
+    <div class="prof-row"><div class="prof-lbl">fc3/w</div><div class="prof-track"><div class="p-grey" style="left:36%;width:51%"></div><div class="p-seg" style="left:5%;width:80%"></div><div class="p-cap" style="left:5%"></div><div class="p-cap" style="left:85%"></div><div class="p-box" style="left:55%;width:20%"></div><div class="p-med" style="left:65%"></div></div><span class="badge b-ok" style="margin-left:8px">OK</span></div>
+    <div class="prof-row"><div class="prof-lbl">output/w</div><div class="prof-track"><div class="p-grey" style="left:36%;width:51%"></div><div class="p-seg" style="left:10%;width:75%"></div><div class="p-cap" style="left:10%"></div><div class="p-cap" style="left:85%"></div><div class="p-box" style="left:58%;width:18%"></div><div class="p-med" style="left:67%"></div></div><span class="badge b-ok" style="margin-left:8px">OK</span></div>
+    <div class="prof-axis"><span>2⁻²²</span><span>2⁻¹⁹</span><span>2⁻¹⁶</span><span>2⁻¹³</span><span>2⁻¹⁰</span><span>2⁻⁷</span><span>2⁻⁴</span><span>2⁻¹</span></div>
+  </div>
+
+  <div class="box teal"><div class="box-t">Observation clé sur tes poids</div><p>Tous les caps droits sont autour de 2⁻¹ = 0.5. Donc <strong>I = 1 suffit</strong> pour les poids. La config ap_fixed&lt;16,6&gt; avec I=6 est 5× trop large → gaspillage de ressources. Tu peux réduire à ap_fixed&lt;8,1&gt;.</p></div>
+
+  <h3>③ + ④ Activations (avant ≈ après — config actuelle est safe)</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Couche</th><th>Cap droit (max activation)</th><th>Zone grise</th><th>I requis</th><th>Avant ≈ Après ?</th></tr>
+    <tr><td class="mono">fc1, fc2, fc3</td><td>~2² = 4</td><td><span class="badge b-ok">✓ couvre</span></td><td>I ≥ 3</td><td class="ok">Identique</td></tr>
+    <tr><td class="mono">relu1, relu2, relu3</td><td>~2² = 4</td><td><span class="badge b-ok">✓ couvre</span></td><td>I ≥ 3</td><td class="ok">Identique</td></tr>
+    <tr><td class="mono">output</td><td>~2² = 4</td><td><span class="badge b-ok">✓ couvre</span></td><td>I ≥ 3</td><td class="ok">Identique</td></tr>
+    <tr><td class="mono">softmax</td><td>~2⁰ = 1</td><td><span class="badge b-ok">✓ couvre</span></td><td>I ≥ 1</td><td class="ok">Trait fin = concentré, normal</td></tr>
+  </table>
+  </div>
+
+  <div class="box amber"><div class="box-t">⚠ Activations montant à 4 ≠ poids restant à 0.5</div><p>Les poids ne dépassent pas 0.5 mais les activations montent à 4. Normal : les sommes de produits (poids × entrées × neurones) s'accumulent. Pour les types d'<strong>activation</strong>, il faut I ≥ 3. HLS4ML le calcule automatiquement avec granularity='name'.</p></div>
+
+  <div class="box green"><div class="box-t">✅ Verdict global de tes graphiques</div><p>Tous les 4 graphiques sont sains. La config ap_fixed&lt;16,6&gt; ne génère aucune saturation. Tu peux passer à la réduction de précision. Tes poids max ≈ 0.5 → réduire à ap_fixed&lt;8,1&gt; est logique et recommandé.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('prof-lire')">← Comment lire</button>
+    <button class="nav-btn" onclick="go('part1')">Suivant : Part 1 →</button>
+  </div>
+</section>
+
+<!-- ══ PART 1 ══ -->
+<section id="part1" class="section">
+  <h2>Part 1 — Getting Started · Baseline</h2>
+  <p class="subtitle">Premier contact avec HLS4ML. Objectif : convertir le modèle sans optimisation.</p>
+
+  <div class="box blue"><div class="box-t">Configuration utilisée</div><p><code>granularity='model'</code>, <code>ReuseFactor=1</code>, <code>ap_fixed&lt;16,6&gt;</code> pour tout le réseau. Chaque multiplication est câblée en parallèle — architecture la plus rapide mais la plus gourmande en DSPs.</p></div>
+
+  <h3>Accuracy — comparaison Keras vs hls4ml</h3>
+  <div class="metrics">
+    <div class="metric info"><div class="metric-val">0.7593</div><div class="metric-label">Keras (float32)</div></div>
+    <div class="metric ok"><div class="metric-val">0.7598</div><div class="metric-label">hls4ml (bit-exact)</div></div>
+    <div class="metric ok"><div class="metric-val">+0.05%</div><div class="metric-label">Différence</div></div>
+    <div class="metric ok"><div class="metric-val">II = 1</div><div class="metric-label">Pipeline complet</div></div>
+  </div>
+
+  <div class="box teal"><div class="box-t">✅ La précision est conservée</div><p>ap_fixed&lt;16,6&gt; suffit pour que l'accuracy soit quasi-identique au modèle float32. Ça confirme que les standards de précision du framework sont bien calibrés pour ce dataset.</p></div>
+
+  <h3>Rapport de Latence</h3>
+  <pre>+---------+---------+----------+----------+-----+-----+---------+
+| Latency (cycles) | Latency (absolute) | Interval | Pipeline|
+|      50 |      50 |  0.250 us|  0.250 us|    1|    1|      yes|
++---------+---------+----------+----------+-----+-----+---------+</pre>
+  <p>50 cycles @ 200MHz = <strong>0.250 µs</strong>. II=1 = pipelining complet → 1 sample accepté chaque cycle d'horloge malgré la latence de 50 cycles.</p>
+
+  <h3>Ressources — Estimation HLS</h3>
+  <pre>+-----------------+---------+------+--------+--------+
+|            Name | BRAM_18K|  DSP |     FF |    LUT |
++-----------------+---------+------+--------+--------+
+|           Total |       4 | 2198 | 268673 | 126088 |
+|       Available |     280 |  220 | 106400 |  53200 |
+|Utilization (%)  |       1 |  999 |    252 |    237 |
++-----------------+---------+------+--------+--------+</pre>
+
+  <div class="metrics">
+    <div class="metric bad"><div class="metric-val">999%</div><div class="metric-label">DSPs utilisés</div></div>
+    <div class="metric bad"><div class="metric-val">2198</div><div class="metric-label">DSPs requis</div></div>
+    <div class="metric bad"><div class="metric-val">237%</div><div class="metric-label">LUTs</div></div>
+    <div class="metric bad"><div class="metric-val">252%</div><div class="metric-label">FFs</div></div>
+  </div>
+
+  <div class="box red"><div class="box-t">❌ Impossible à implémenter sur le PYNQ-Z1</div><p>Le modèle requiert 2198 DSPs alors que le PYNQ-Z1 n'en a que 220. C'est ~10× la capacité disponible. La raison : en RF=1, chaque poids du réseau (des centaines de neurones × couches denses) a son propre multiplicateur câblé physiquement. Solution : augmenter le RF (Part 2) ou réduire les bits (Parts 3-4).</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('prof-tes')">← Tes résultats profilage</button>
+    <button class="nav-btn" onclick="go('part2')">Suivant : Part 2 →</button>
+  </div>
+</section>
+
+<!-- ══ PART 2 ══ -->
+<section id="part2" class="section">
+  <h2>Part 2 — Advanced Configuration</h2>
+  <p class="subtitle">Profiling, ajustement de précision, et impact du ReuseFactor</p>
+
+  <div class="box purple"><div class="box-t">Nouveautés de cette partie</div><p>Introduction du profiling numérique (<code>numerical()</code>), du Trace pour comparer les couches, et test de différents ReuseFactor (RF=1 et RF=2). Granularity='name' permet un réglage couche par couche.</p></div>
+
+  <h3>Résultats RF=1 (granularity='name')</h3>
+  <div class="metrics">
+    <div class="metric info"><div class="metric-val">0.76038</div><div class="metric-label">Keras</div></div>
+    <div class="metric ok"><div class="metric-val">0.75919</div><div class="metric-label">hls4ml RF=1</div></div>
+    <div class="metric ok"><div class="metric-val">47 cycles</div><div class="metric-label">Latence</div></div>
+    <div class="metric ok"><div class="metric-val">II = 1</div><div class="metric-label">Pipeline</div></div>
+  </div>
+
+  <h3>Résultats RF=2 (granularity='model')</h3>
+  <div class="metrics">
+    <div class="metric info"><div class="metric-val">0.76038</div><div class="metric-label">Keras</div></div>
+    <div class="metric ok"><div class="metric-val">0.75998</div><div class="metric-label">hls4ml RF=2</div></div>
+    <div class="metric warn"><div class="metric-val">47 cycles</div><div class="metric-label">Latence</div></div>
+    <div class="metric warn"><div class="metric-val">II = 2</div><div class="metric-label">Pipeline</div></div>
+  </div>
+
+  <div class="box amber"><div class="box-t">II=2 avec RF=2 — qu'est-ce que ça change ?</div><p>Avec RF=2, le FPGA partage chaque multiplicateur entre 2 poids. Il faut donc 2 cycles d'horloge pour traiter un poids → II=2. Concrètement : au lieu d'accepter 1 nouveau sample par cycle, le système accepte 1 sample tous les 2 cycles. Le débit est divisé par 2.</p></div>
+
+  <h3>Ressources avec RF=2</h3>
+  <pre>|Utilization (%) |  1 | 925 | 232 | 241 |  0 |</pre>
+
+  <div class="metrics">
+    <div class="metric bad"><div class="metric-val">925%</div><div class="metric-label">DSPs (RF=2)</div></div>
+    <div class="metric bad"><div class="metric-val">2037</div><div class="metric-label">DSPs requis</div></div>
+    <div class="metric bad"><div class="metric-val">241%</div><div class="metric-label">LUTs</div></div>
+  </div>
+
+  <div class="box red"><div class="box-t">❌ Toujours impossible — RF=2 ne suffit pas</div><p>Passer de RF=1 à RF=2 réduit les DSPs de 2198 → 2037, soit seulement ~8% de moins. Il faudrait RF ≈ 10 pour descendre sous les 220 DSPs avec ce modèle non compressé. Mais augmenter RF seul augmente trop la latence — il faut aussi réduire la précision.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part1')">← Part 1</button>
+    <button class="nav-btn" onclick="go('part3')">Suivant : Part 3 →</button>
+  </div>
+</section>
+
+<!-- ══ PART 3 ══ -->
+<section id="part3" class="section">
+  <h2>Part 3 — Compression (Pruning)</h2>
+  <p class="subtitle">50% de sparsité avec TensorFlow Model Optimization Toolkit</p>
+
+  <div class="box purple"><div class="box-t">Principe du Magnitude Pruning</div><p>Pendant l'entraînement, les poids les plus petits en valeur absolue sont progressivement mis à zéro. À la fin, 50% des poids du réseau valent exactement 0. HLS4ML exploite ces zéros : si un poids est nul, la multiplication est nulle → DSP non utilisé (sous certaines conditions de RF).</p></div>
+
+  <h3>Résultats</h3>
+  <div class="metrics">
+    <div class="metric info"><div class="metric-val">0.76038</div><div class="metric-label">Keras baseline</div></div>
+    <div class="metric warn"><div class="metric-val">0.75365</div><div class="metric-label">hls4ml pruné</div></div>
+    <div class="metric warn"><div class="metric-val">−0.67%</div><div class="metric-label">Perte accuracy</div></div>
+    <div class="metric ok"><div class="metric-val">46 cycles</div><div class="metric-label">Latence</div></div>
+  </div>
+
+  <h3>Ressources</h3>
+  <pre>|Utilization (%) |  1 | 413 | 100 |  67 |  0 |</pre>
+
+  <div class="pbar-wrap">
+    <div class="pbar-row">
+      <div class="pbar-label">DSP</div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:100%;background:#A32D2D"><span class="pbar-pct">413% (909 DSPs)</span></div></div>
+      <div class="pbar-note" style="color:#A32D2D">❌ trop</div>
+    </div>
+    <div class="pbar-row">
+      <div class="pbar-label">LUT</div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:67%;background:#BA7517"><span class="pbar-pct">67%</span></div></div>
+      <div class="pbar-note">⚠ limite</div>
+    </div>
+    <div class="pbar-row">
+      <div class="pbar-label">FF</div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:100%;background:#A32D2D"><span class="pbar-pct">100% (106470)</span></div></div>
+      <div class="pbar-note" style="color:#A32D2D">❌ plein</div>
+    </div>
+  </div>
+
+  <div class="box amber"><div class="box-t">Progrès mais pas suffisant</div><p>Le pruning réduit les DSPs de 2198 → 909, soit une réduction de ~59%. C'est significatif, mais 909 DSPs reste encore 4× la capacité du PYNQ-Z1 (220). Les FFs sont à 100% → impossible de router. Il faut une approche plus agressive : quantisation des bits eux-mêmes.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part2')">← Part 2</button>
+    <button class="nav-btn" onclick="go('part4')">Suivant : Part 4 ✓ →</button>
+  </div>
+</section>
+
+<!-- ══ PART 4 ══ -->
+<section id="part4" class="section">
+  <h2>Part 4 — QKeras ← PREMIER SUCCÈS</h2>
+  <p class="subtitle">Quantisation-Aware Training avec QKeras : 6 bits + 75% de sparsité → ça rentre !</p>
+
+  <div class="box green"><div class="box-t">🎉 Première configuration qui rentre dans le PYNQ-Z1</div><p>Avec QKeras (quantisation pendant l'entraînement) à 6 bits + 75% de sparsité par pruning, les DSPs tombent à 55% — sous la limite des 220. Le modèle peut maintenant être synthétisé et déployé sur le FPGA.</p></div>
+
+  <div class="box purple"><div class="box-t">QKeras vs Quantisation post-training — la différence clé</div><p>En post-training quantization (Parts 1-3), tu entraînes en float32 puis tu tronques les poids à X bits → perte d'accuracy. Avec QKeras, le réseau <strong>apprend à fonctionner avec peu de bits pendant l'entraînement</strong>. Les gradients sont propagés en tenant compte de la contrainte de bits. Résultat : meilleure accuracy pour le même nombre de bits.</p></div>
+
+  <h3>Configuration QKeras utilisée</h3>
+  <p>Poids quantisés à <strong>6 bits</strong> pendant l'entraînement. 75% de sparsité par pruning. Granularity='name', RF=1.</p>
+
+  <h3>Résultats accuracy</h3>
+  <div class="metrics">
+    <div class="metric info"><div class="metric-val">0.76038</div><div class="metric-label">Keras baseline</div></div>
+    <div class="metric ok"><div class="metric-val">0.76023</div><div class="metric-label">QKeras pruné</div></div>
+    <div class="metric ok"><div class="metric-val">0.76051</div><div class="metric-label">hls4ml émulation</div></div>
+    <div class="metric ok"><div class="metric-val">+0.01%</div><div class="metric-label">vs baseline</div></div>
+  </div>
+
+  <div class="box teal"><div class="box-t">L'hls4ml dépasse légèrement le Keras — comment c'est possible ?</div><p>La quantisation peut parfois agir comme une régularisation implicite, réduisant un léger surapprentissage. L'émulation hls4ml à 0.76051 dépasse le Keras à 0.76038 de 0.013% — dans la marge d'erreur. C'est un excellent résultat : preuve que QKeras a bien appris à compenser la contrainte de bits.</p></div>
+
+  <h3>Rapport de Latence</h3>
+  <pre>| 49 | 49 | 0.245 us | 0.245 us | 1 | 1 | yes |</pre>
+
+  <h3>Ressources</h3>
+  <pre>|Utilization (%) |  1 |  55 |  39 |  82 |  0 |
+|           Total |  4 | 122 | 42002 | 44011 |  0 |
+|       Available | 280 | 220 | 106400 | 53200 |  0 |</pre>
+
+  <div class="pbar-wrap">
+    <div class="pbar-row">
+      <div class="pbar-label">DSP</div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:55%;background:#1D9E75"><span class="pbar-pct">55% (122 DSPs)</span></div></div>
+      <div class="pbar-note" style="color:#1D9E75">✓ OK</div>
+    </div>
+    <div class="pbar-row">
+      <div class="pbar-label">LUT</div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:82%;background:#BA7517"><span class="pbar-pct">82% — limite</span></div></div>
+      <div class="pbar-note" style="color:#BA7517">⚠ limite</div>
+    </div>
+    <div class="pbar-row">
+      <div class="pbar-label">FF</div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:39%;background:#1D9E75"><span class="pbar-pct">39%</span></div></div>
+      <div class="pbar-note" style="color:#1D9E75">✓ OK</div>
+    </div>
+  </div>
+
+  <div class="box green"><div class="box-t">✅ Pourquoi ça marche ?</div><p>QKeras à 6 bits réduit radicalement la taille des multiplicateurs. Sur FPGA, un multiplicateur 16×16 bits = plusieurs DSPs, mais un multiplicateur 6×6 bits peut parfois tenir dans un seul DSP ou même dans des LUTs. Combiné à 75% de sparsité (3/4 des multiplications = 0), le réseau consomme seulement 122 DSPs — bien sous les 220 disponibles.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part3')">← Part 3</button>
+    <button class="nav-btn" onclick="go('part41')">Suivant : Part 4.1 →</button>
+  </div>
+</section>
+
+<!-- ══ PART 4.1 ══ -->
+<section id="part41" class="section">
+  <h2>Part 4.1 — HGQ (High Granularity Quantization)</h2>
+  <p class="subtitle">Quantisation par poids individuel — résultat mitigé</p>
+
+  <div class="box purple"><div class="box-t">Qu'est-ce que HGQ ?</div><p>HGQ (High Granularity Quantization) va encore plus loin que QKeras : au lieu d'attribuer la même précision à tous les poids d'une couche, il détermine la précision <strong>idéale pour chaque poids individuel</strong>. Les poids importants gardent plus de bits, les poids moins importants en reçoivent moins.</p></div>
+
+  <h3>Workflow spécifique HGQ</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <p><strong>Entraînement HGQ</strong> — assignation automatique de bits par poids</p>
+        <p>Objectif : 6500 BOPs (Bit Operations) ≈ 6500 LUTs équivalents (incluant DSPs pondérés).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <p><strong>Conversion en Proxy Model</strong> — étape obligatoire</p>
+        <p>HLS4ML ne peut pas convertir directement un modèle HGQ. Il faut d'abord créer un Proxy Model avec <code>trace_minmax</code> et un <code>cover_range</code> (facteur de sécurité). Ce proxy est un émulateur bit-exact du modèle HGQ.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <p><strong>Conversion hls4ml du Proxy</strong></p>
+        <pre>hls_model = hls4ml.converters.<span class="fn">convert_from_keras_model</span>(
+    proxy, output_dir=<span class="st">'model_3.1/hls4ml_prj'</span>,
+    part=<span class="st">'xc7z020clg400-1'</span>, backend=<span class="st">'Vitis'</span>
+)</pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>Résultats</h3>
+  <div class="metrics">
+    <div class="metric info"><div class="metric-val">0.76038</div><div class="metric-label">Keras baseline</div></div>
+    <div class="metric ok"><div class="metric-val">0.75950</div><div class="metric-label">HGQ pruné</div></div>
+    <div class="metric bad"><div class="metric-val">0.46677</div><div class="metric-label">hls4ml émulation</div></div>
+    <div class="metric bad"><div class="metric-val">−29%</div><div class="metric-label">Perte accuracy</div></div>
+  </div>
+
+  <div class="box red"><div class="box-t">❌ Accuracy effondrée à 46.7%</div><p>Le modèle HGQ entraîné a 75.95% d'accuracy, mais l'émulation hls4ml tombe à 46.67%. Pourquoi ? Le Proxy Model a été trop agressif dans sa réduction de bits — certains poids importants ont été assignés à trop peu de bits, et l'arrondi dans hls4ml amplifie les erreurs numériques. Le cover_range ou la cible BOPs auraient dû être ajustés.</p></div>
+
+  <h3>Ressources — spectaculaires malgré l'échec</h3>
+  <pre>|Utilization (%) |  0 |   4 |  20 |  50 |  0 |
+|           Total |  0 |   9 | 22171 | 27009 |  0 |</pre>
+
+  <div class="metrics">
+    <div class="metric ok"><div class="metric-val">4%</div><div class="metric-label">DSPs (9 seulement !)</div></div>
+    <div class="metric ok"><div class="metric-val">50%</div><div class="metric-label">LUTs</div></div>
+    <div class="metric ok"><div class="metric-val">31 cycles</div><div class="metric-label">Latence</div></div>
+  </div>
+
+  <div class="box amber"><div class="box-t">Conclusion HGQ</div><p>HGQ est extraordinairement efficace en ressources (seulement 9 DSPs !), mais la conversion en Proxy Model a introduit trop d'erreurs. Avec un meilleur réglage du cover_range et de la cible BOPs, HGQ pourrait donner les meilleurs résultats du tutoriel. Le potentiel est là, mais le calibrage est délicat.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part4')">← Part 4</button>
+    <button class="nav-btn" onclick="go('part5')">Suivant : Part 5 →</button>
+  </div>
+</section>
+
+<!-- ══ PART 5 ══ -->
+<section id="part5" class="section">
+  <h2>Part 5 — BDT / Conifer</h2>
+  <p class="subtitle">Sortie des réseaux neuronaux — arbres de décision boostés sur FPGA</p>
+
+  <div class="box blue"><div class="box-t">Qu'est-ce qu'un BDT (Boosted Decision Tree) ?</div><p>Un BDT est un modèle ML basé sur des arbres de décision, entraîné avec XGBoost (eXtreme Gradient Boosting). Chaque arbre corrige les erreurs du précédent. Pour les FPGAs, le framework <strong>Conifer</strong> convertit ces modèles en HLS, avec plusieurs backends : Vivado HLS, VHDL, et Julia.</p></div>
+
+  <h3>Workflow BDT → FPGA</h3>
+  <pre><span class="kw">import</span> xgboost <span class="kw">as</span> xgb
+<span class="kw">import</span> conifer
+
+<span class="cm"># Entraîner le BDT avec XGBoost</span>
+clf = xgb.<span class="fn">XGBClassifier</span>(n_estimators=<span class="num">20</span>, max_depth=<span class="num">3</span>)
+clf.<span class="fn">fit</span>(X_train, y_train)
+
+<span class="cm"># Convertir avec Conifer</span>
+cfg = conifer.backends.xilinxhls.<span class="fn">auto_config</span>()
+cfg[<span class="st">'OutputDir'</span>] = <span class="st">'conifer_prj'</span>
+model = conifer.<span class="fn">model</span>(clf, conifer.backends.xilinxhls, cfg)
+model.<span class="fn">compile</span>()  <span class="cm"># compile et synthétise</span>
+
+<span class="cm"># Déploiement sur PYNQ-Z1</span>
+accelerator = conifer.backends.xilinxhls.runtime.<span class="fn">ZynqDriver</span>(
+    <span class="st">'conifer_jettag.bit'</span>, batch_size=<span class="num">1</span>
+)</pre>
+
+  <h3>Résultats accuracy</h3>
+  <div class="metrics">
+    <div class="metric info"><div class="metric-val">0.76038</div><div class="metric-label">Keras baseline</div></div>
+    <div class="metric ok"><div class="metric-val">0.75846</div><div class="metric-label">XGBoost</div></div>
+    <div class="metric ok"><div class="metric-val">0.75858</div><div class="metric-label">Conifer (FPGA)</div></div>
+  </div>
+
+  <h3>Inférence réelle sur le PYNQ-Z1</h3>
+  <pre>Result: [[-0.5439453  1.1416016  1.375  -3.6503906  -3.0107422]]
+<span class="cm"># Classe prédite = argmax = index 2 = valeur 1.375 → Classe 3 (W-Bosons)</span></pre>
+
+  <div class="box teal"><div class="box-t">Particularité de Conifer : 0% de DSPs</div><p>Les arbres de décision n'utilisent pas de multiplications — ils font uniquement des comparaisons (seuils). Donc 0 DSP utilisé. La charge est sur les LUTs (83%) pour les comparaisons et la logique. Un BDT sur FPGA via Conifer est plus rapide que sur CPU pour les mêmes paramètres, et ne sollicite pas du tout les DSPs.</p></div>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Ressource</th><th>Utilisation</th><th>Disponible</th><th>%</th></tr>
+    <tr><td>LUTs</td><td>44 083</td><td>53 200</td><td class="warn">82.86%</td></tr>
+    <tr><td>Flip-Flops</td><td>21 554</td><td>106 400</td><td class="ok">20.26%</td></tr>
+    <tr><td>DSPs</td><td class="ok">0</td><td>220</td><td class="ok">0%</td></tr>
+  </table>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part41')">← Part 4.1</button>
+    <button class="nav-btn" onclick="go('part6')">Suivant : Part 6 →</button>
+  </div>
+</section>
+
+<!-- ══ PART 6 ══ -->
+<section id="part6" class="section">
+  <h2>Part 6 — CNNs (Convolution sur FPGAs)</h2>
+  <p class="subtitle">Dataset SVHN (images 32×32 RGB) — les CNNs sont bien plus gourmands que les MLP</p>
+
+  <div class="box blue"><div class="box-t">Pourquoi les CNNs sont plus difficiles ?</div><p>Un réseau dense (MLP) fait des multiplications entre vecteurs. Un CNN fait des convolutions 2D — des milliers de multiplications pour chaque patch de l'image. Sur le dataset SVHN (Street View House Numbers, images 32×32 RGB), le CNN pruné + quantisé a encore 5386 DSPs en configuration parallèle.</p></div>
+
+  <h3>Deux modèles comparés</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">Modèle pruné (Keras float32)</div>
+      <p>Accuracy : <strong>0.882</strong><br>hls4ml émulation : 0.8826</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">Pruné + Quantisé 6-bit QKeras</div>
+      <p>Accuracy : <strong>0.847</strong><br>hls4ml émulation : 0.8466<br>Perte : ~3.5%</p>
+    </div>
+  </div>
+
+  <div class="box amber"><div class="box-t">io_type='io_stream' — spécifique aux CNNs</div><p>Pour limiter la mémoire nécessaire au traitement des images (32×32 pixels × 3 canaux = 3072 valeurs), on utilise le mode streaming (<code>io_type='io_stream'</code>). Les pixels arrivent en séquence au lieu d'être tous chargés en mémoire simultanément. C'est pourquoi l'II est 1028 et non 1 : le système traite les pixels en pipeline séquentiel.</p></div>
+
+  <h3>Latence</h3>
+  <div class="metrics">
+    <div class="metric warn"><div class="metric-val">1044</div><div class="metric-label">Cycles</div></div>
+    <div class="metric warn"><div class="metric-val">5.22 µs</div><div class="metric-label">Latence absolue</div></div>
+    <div class="metric warn"><div class="metric-val">1028</div><div class="metric-label">II (streaming)</div></div>
+  </div>
+
+  <h3>Ressources (Pruné + Quantisé 6-bit)</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Ressource</th><th>Pruné Keras</th><th>Pruné + Quantisé</th><th>Disponible</th><th>Statut</th></tr>
+    <tr><td>DSP</td><td class="bad">5386 (4383%)</td><td class="bad">353 (160%)</td><td>220</td><td><span class="badge b-bad">❌ dépasse</span></td></tr>
+    <tr><td>BRAM</td><td>42</td><td>34</td><td>280</td><td><span class="badge b-ok">✓</span></td></tr>
+    <tr><td>LUT</td><td class="bad">123 948 (233%)</td><td class="bad">118 931 (224%)</td><td>53 200</td><td><span class="badge b-bad">❌ dépasse</span></td></tr>
+  </table>
+  </div>
+
+  <div class="box red"><div class="box-t">❌ Toujours hors capacité — les CNNs sont intrinsèquement plus lourds</div><p>Même avec 6-bit QKeras + pruning, 353 DSPs sont requis pour 220 disponibles. Pour faire rentrer ce CNN sur le PYNQ-Z1, il faudrait : augmenter le RF (mais l'II déjà élevé de 1028 augmenterait encore), ou utiliser HGQ avec une cible encore plus agressive, ou réduire la taille du CNN.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part5')">← Part 5</button>
+    <button class="nav-btn" onclick="go('part7')">Suivant : Part 7 ✓ →</button>
+  </div>
+</section>
+
+<!-- ══ PART 7 ══ -->
+<section id="part7" class="section">
+  <h2>Part 7 — Déploiement PYNQ-Z1 ✓</h2>
+  <p class="subtitle">Parts 7a (bitstream) + 7b (déploiement) + 7c (validation) — le workflow hardware complet</p>
+
+  <div class="box green"><div class="box-t">🎉 Le modèle tourne pour de vrai sur le PYNQ-Z1</div><p>Avec RF=64 et le backend VivadoAccelerator, le modèle QKeras (Part 4) est synthétisé en bitstream, chargé sur le PYNQ-Z1 via Python, et valide bit-exact la simulation logicielle.</p></div>
+
+  <h3>7a — Génération du Bitstream</h3>
+  <div class="box purple"><div class="box-t">Backend VivadoAccelerator — ce qui change</div><p>Ce backend ne crée pas juste un IP core. Il génère un <strong>design SoC complet</strong> : le réseau neuronal est encapsulé dans une interface AXI-Stream, connecté au processeur ARM via DMA (Direct Memory Access). Vivado crée le bloc design, route les connexions, et génère le fichier .bit + .hwh.</p></div>
+
+  <pre><span class="cm"># Configuration avec RF=64 pour rentrer dans les 220 DSPs</span>
+config[<span class="st">'Model'</span>][<span class="st">'ReuseFactor'</span>] = <span class="num">64</span>
+
+hls_model = hls4ml.converters.<span class="fn">convert_from_keras_model</span>(
+    model, hls_config=config,
+    backend=<span class="st">'VivadoAccelerator'</span>,
+    board=<span class="st">'pynq-z2'</span>,   <span class="cm"># même chip xc7z020 que le PYNQ-Z1</span>
+    output_dir=<span class="st">'model_7/hls4ml_prj'</span>
+)
+hls_model.<span class="fn">build</span>(csim=<span class="kw">True</span>, synth=<span class="kw">True</span>, impl=<span class="kw">True</span>)</pre>
+
+  <h3>Métriques après synthèse complète (post-implementation)</h3>
+  <div class="metrics">
+    <div class="metric ok"><div class="metric-val">93</div><div class="metric-label">Cycles latence</div></div>
+    <div class="metric ok"><div class="metric-val">465 ns</div><div class="metric-label">Latence absolue</div></div>
+    <div class="metric warn"><div class="metric-val">94</div><div class="metric-label">II (cycles)</div></div>
+    <div class="metric ok"><div class="metric-val">RF = 64</div><div class="metric-label">ReuseFactor</div></div>
+  </div>
+
+  <h3>Ressources post-implémentation (valeurs réelles)</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Ressource</th><th>Utilisé</th><th>Disponible</th><th>%</th><th>Statut</th></tr>
+    <tr><td>LUT</td><td>20 698</td><td>53 200</td><td class="ok">38.91%</td><td><span class="badge b-ok">✓</span></td></tr>
+    <tr><td>LUT-RAM</td><td>290</td><td>17 400</td><td class="ok">1.67%</td><td><span class="badge b-ok">✓</span></td></tr>
+    <tr><td>Flip-Flop</td><td>23 211</td><td>106 400</td><td class="ok">21.81%</td><td><span class="badge b-ok">✓</span></td></tr>
+    <tr><td>BRAM</td><td>7</td><td>140</td><td class="ok">5.00%</td><td><span class="badge b-ok">✓</span></td></tr>
+    <tr><td>DSP</td><td class="ok">9</td><td>220</td><td class="ok">4.09%</td><td><span class="badge b-ok">✓</span></td></tr>
+    <tr><td>BUFG</td><td>1</td><td>32</td><td class="ok">3.13%</td><td><span class="badge b-ok">✓</span></td></tr>
+  </table>
+  </div>
+
+  <div class="box teal"><div class="box-t">RF=64 réduit les DSPs de 122 (Part 4) à seulement 9 !</div><p>Avec RF=64, chaque multiplicateur hardware est partagé entre 64 poids différents. 122 DSPs ÷ 64 ≈ 2, et le reste est implémenté en LUTs. Contrepartie : l'II passe de 1 à 94 cycles → débit divisé par 94 vs RF=1. Mais pour cette application, 465 ns de latence est largement suffisant.</p></div>
+
+  <h3>7b — Déploiement et performances on-board</h3>
+  <pre><span class="cm"># Charger le bitstream sur le PYNQ-Z1</span>
+<span class="kw">from</span> pynq <span class="kw">import</span> Overlay
+ol = <span class="fn">Overlay</span>(<span class="st">'hls4ml_wrapper.bit'</span>)
+
+<span class="cm"># Streamer 166 000 samples par DMA</span>
+y_hw = hls4ml.backends.pynq.<span class="fn">predict</span>(X_test)  <span class="cm"># via AXI-DMA</span></pre>
+
+  <div class="metrics">
+    <div class="metric ok"><div class="metric-val">166 000</div><div class="metric-label">Samples testés</div></div>
+    <div class="metric ok"><div class="metric-val">283 000–412 000</div><div class="metric-label">Inférences/seconde</div></div>
+  </div>
+
+  <h3>7c — Validation bit-exact</h3>
+  <div class="metrics">
+    <div class="metric ok"><div class="metric-val">0.7601</div><div class="metric-label">Accuracy PYNQ-Z1</div></div>
+    <div class="metric ok"><div class="metric-val">0.7601</div><div class="metric-label">hls4ml CPU sim</div></div>
+    <div class="metric ok"><div class="metric-val">0 bit</div><div class="metric-label">Différence</div></div>
+  </div>
+
+  <div class="box green"><div class="box-t">✅ Correspondance bit-exacte — la Projektarbeit est complète</div><p>La validation bit-exacte confirme que le hardware FPGA produit <strong>exactement les mêmes résultats</strong> que la simulation logicielle sur CPU. Aucune erreur de routage, aucun problème de timing. Le portage complet de l'IA vers le FPGA est validé.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part6')">← Part 6</button>
+    <button class="nav-btn" onclick="go('part8')">Suivant : Part 8 →</button>
+  </div>
+</section>
+
+<!-- ══ PART 8 ══ -->
+<section id="part8" class="section">
+  <h2>Part 8 — Symbolic Regression</h2>
+  <p class="subtitle">Remplacer un réseau neuronal par une équation mathématique compacte</p>
+
+  <div class="box blue"><div class="box-t">Principe — une approche radicalement différente</div><p>Au lieu d'un réseau de neurones, on cherche une <strong>expression mathématique</strong> qui décrit les données. Normalement on utilise PySR (genetic programming) pour trouver automatiquement ces expressions. PySR n'ayant pas pu être installé, les expressions ont été définies manuellement et parsées avec Sympy.</p></div>
+
+  <h3>Deux implémentations comparées</h3>
+  <div class="g2">
+    <div class="card blue">
+      <div class="card-title">Standard HLS</div>
+      <p>Utilise les bibliothèques math standard de HLS pour calculer les expressions (sin, exp, log, etc.). Précision maximale mais consomme plus de ressources.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">HLS avec Look-Up Tables (LUT)</div>
+      <p>Les fonctions complexes sont approximées par des tables précalculées. Moins précis mais beaucoup plus rapide et moins gourmand en ressources.</p>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Métrique</th><th>Standard HLS</th><th>HLS avec LUT</th><th>Différence</th></tr>
+    <tr><td>Accuracy</td><td>0.723</td><td>0.721</td><td class="ok">−0.2% seulement</td></tr>
+    <tr><td>AUC (moyen)</td><td>~0.894</td><td>~0.894</td><td class="ok">Identique</td></tr>
+    <tr><td>Exemple scores</td><td>[-0.421, -0.757, -0.893, -0.849, -1.223]</td><td>[-0.458, -0.760, -0.846, -0.868, -1.210]</td><td>Ordre des classes identique</td></tr>
+  </table>
+  </div>
+
+  <div class="box teal"><div class="box-t">Conclusion : la LUT-approximation est remarquablement précise</div><p>Une différence de seulement 0.2% d'accuracy entre calcul exact et LUT, pour des ressources bien inférieures. L'ordre des classes reste identique → la classification est correcte dans les deux cas. La régression symbolique est idéale pour l'edge computing sur petits FPGAs : équation compacte + LUT = inférence ultra-rapide avec ressources minimales.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part7')">← Part 7</button>
+    <button class="nav-btn" onclick="go('tableau')">Suivant : Tableau global →</button>
+  </div>
+</section>
+
+<!-- ══ TABLEAU GLOBAL ══ -->
+<section id="tableau" class="section">
+  <h2>Tableau comparatif global</h2>
+  <p class="subtitle">Résumé de tous les tutoriels — référence : Part 1 (Baseline)</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Tutorial</th><th>Optimisation</th><th>DSP%</th><th>LUT%</th><th>Latence µs</th><th>II</th><th>Accuracy</th><th>Fit PYNQ-Z1 ?</th></tr>
+    <tr>
+      <td class="mono">Part 1</td><td>Baseline ap_fixed&lt;16,6&gt;</td>
+      <td class="bad">999%</td><td class="bad">237%</td><td>0.250</td><td>1</td><td>75.978%</td>
+      <td><span class="badge b-bad">❌ Non</span></td>
+    </tr>
+    <tr>
+      <td class="mono">Part 2 RF=1</td><td>Profiling + granularity='name'</td>
+      <td class="bad">~999%</td><td class="bad">~237%</td><td>0.235</td><td>1</td><td>75.919%</td>
+      <td><span class="badge b-bad">❌ Non</span></td>
+    </tr>
+    <tr>
+      <td class="mono">Part 2 RF=2</td><td>ReuseFactor = 2</td>
+      <td class="bad">925%</td><td class="bad">232%</td><td>0.235</td><td>2</td><td>75.998%</td>
+      <td><span class="badge b-bad">❌ Non</span></td>
+    </tr>
+    <tr>
+      <td class="mono">Part 3</td><td>Pruning 50% Sparsité</td>
+      <td class="bad">413%</td><td class="warn">67%</td><td>0.230</td><td>1</td><td>75.365%</td>
+      <td><span class="badge b-bad">❌ Non</span></td>
+    </tr>
+    <tr style="background:rgba(29,158,117,0.06)">
+      <td class="mono">Part 4</td><td><strong>QKeras 6-bit + Pruning 75%</strong></td>
+      <td class="ok">55%</td><td class="warn">82%</td><td>0.245</td><td>1</td><td class="ok"><strong>76.051%</strong></td>
+      <td><span class="badge b-ok">✅ OUI</span></td>
+    </tr>
+    <tr>
+      <td class="mono">Part 4.1</td><td>HGQ per-weight</td>
+      <td class="ok">4%</td><td class="ok">50%</td><td>0.155</td><td>1</td><td class="bad">46.677%</td>
+      <td><span class="badge b-warn">⚠ Fit mais accuracy faible</span></td>
+    </tr>
+    <tr>
+      <td class="mono">Part 5</td><td>BDT XGBoost / Conifer</td>
+      <td class="ok">0%</td><td class="warn">83%</td><td>—</td><td>1</td><td>75.858%</td>
+      <td><span class="badge b-ok">✅ OUI</span></td>
+    </tr>
+    <tr>
+      <td class="mono">Part 6</td><td>CNN Pruned+Quantized 6-bit</td>
+      <td class="bad">160%</td><td class="bad">224%</td><td>5.22</td><td>1028</td><td>84.66%</td>
+      <td><span class="badge b-bad">❌ Non</span></td>
+    </tr>
+    <tr style="background:rgba(29,158,117,0.06)">
+      <td class="mono">Part 7 RF=64</td><td><strong>On-Board Deployment</strong></td>
+      <td class="ok">4.09%</td><td class="ok">38.91%</td><td class="ok">0.465</td><td>94</td><td class="ok"><strong>76.01%</strong></td>
+      <td><span class="badge b-ok">✅ OUI ✓ validé hardware</span></td>
+    </tr>
+    <tr>
+      <td class="mono">Part 8</td><td>Symbolic Regression HLS</td>
+      <td>—</td><td>—</td><td>—</td><td>—</td><td>72.3%</td>
+      <td><span class="badge b-gray">non synthétisé</span></td>
+    </tr>
+  </table>
+  </div>
+
+  <h3>Visualisation de la progression DSP%</h3>
+  <div class="compare-timeline">
+    <div class="ct-row"><div class="ct-label">Part 1</div><div class="ct-bar-wrap"><div class="ct-bar-title">Baseline — RF=1, ap_fixed&lt;16,6&gt;</div><div class="ct-mini-row"><div class="ct-mini-label">DSP</div><div class="ct-mini-track"><div class="ct-mini-fill" style="width:100%;background:#A32D2D"></div></div><div class="ct-mini-val" style="color:#A32D2D">999%</div></div><div class="ct-verdict bad">❌ Impossible — 2198 DSPs requis</div></div></div>
+    <div class="ct-row"><div class="ct-label">Part 3</div><div class="ct-bar-wrap"><div class="ct-bar-title">Pruning 50% Sparsité</div><div class="ct-mini-row"><div class="ct-mini-label">DSP</div><div class="ct-mini-track"><div class="ct-mini-fill" style="width:100%;background:#A32D2D"></div></div><div class="ct-mini-val" style="color:#A32D2D">413%</div></div><div class="ct-verdict warn">⚠ Réduit à 909 DSPs mais toujours trop</div></div></div>
+    <div class="ct-row"><div class="ct-label">Part 4</div><div class="ct-bar-wrap"><div class="ct-bar-title">QKeras 6-bit + Pruning 75% ← PREMIER FIT</div><div class="ct-mini-row"><div class="ct-mini-label">DSP</div><div class="ct-mini-track"><div class="ct-mini-fill" style="width:55%;background:#1D9E75"></div></div><div class="ct-mini-val" style="color:#1D9E75">55% (122)</div></div><div class="ct-verdict ok">✅ Rentre dans les 220 DSPs</div></div></div>
+    <div class="ct-row"><div class="ct-label">Part 7</div><div class="ct-bar-wrap"><div class="ct-bar-title">RF=64 + VivadoAccelerator ← DEPLOYMENT</div><div class="ct-mini-row"><div class="ct-mini-label">DSP</div><div class="ct-mini-track"><div class="ct-mini-fill" style="width:4%;background:#1D9E75"><span style="font-size:9px;color:#fff;padding-left:2px;white-space:nowrap">4%</span></div></div><div class="ct-mini-val" style="color:#1D9E75">4% (9)</div></div><div class="ct-verdict ok">✅ Validé bit-exact sur hardware réel</div></div></div>
+  </div>
+
+  <div class="box purple"><div class="box-t">La leçon principale</div><p>La quantisation seule (réduire les bits) est plus efficace que le pruning seul pour réduire les DSPs. La combinaison QKeras (6-bit pendant entraînement) + pruning (75% zéros) est la clé du succès en Part 4. Le ReuseFactor = 64 en Part 7 réduit encore les DSPs de 122 → 9 au prix d'un II=94, ce qui reste acceptable pour cette application.</p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('part8')">← Part 8</button>
+    <button class="nav-btn" onclick="go('hurden')">Suivant : Problèmes →</button>
+  </div>
+</section>
+
+<!-- ══ HURDEN ══ -->
+<section id="hurden" class="section">
+  <h2>Problèmes rencontrés</h2>
+  <p class="subtitle">Les 3 obstacles principaux lors de la mise en œuvre</p>
+
+  <div class="hurdle">
+    <h3>① Compatibilité système</h3>
+    <p>HLS4ML requiert une combinaison très spécifique de versions : Python, TensorFlow, QKeras, hls4ml, et Vivado/Vitis HLS doivent toutes être compatibles entre elles. Un seul désaccord de version peut bloquer l'ensemble de la chaîne.</p>
+    <div class="box amber"><div class="box-t">Solution adoptée</div><p>Ubuntu 22.04 LTS (Linux natif pour Xilinx). Conda pour isoler l'environnement. Fichier <code>environment.yml</code> fourni par le tutoriel officiel. Ajout manuel de conifer (pour BDT) et Julia (pour Conifer-Julia backend). La toolchain Xilinx est sourcée via <code>source /opt/Xilinx/Vivado/20xx.x/settings64.sh</code> dans le terminal Bash.</p></div>
+  </div>
+
+  <div class="hurdle">
+    <h3>② Conflit Vitis Backend — Problème de version</h3>
+    <p>La version de hls4ml utilisée appelait le programme <code>vitis_run</code> pour lancer la synthèse HLS. Or, Vitis 2022 utilise l'exécutable <code>vitis_hls</code>. De plus, d'anciennes conventions dans hls4ml attendaient encore <code>vivado_hls</code>. Résultat : erreurs systématiques lors du build automatique.</p>
+    <div class="box red"><div class="box-t">Symptôme</div><p>Les builds échouaient avec "command not found: vitis_run" ou des chemins incorrects vers les exécutables HLS. Le projet HLS était généré correctement mais la synthèse ne se lançait pas.</p></div>
+    <div class="box teal"><div class="box-t">Solution adoptée</div><p>Downgrade de hls4ml vers une version plus stable compatible avec Vitis 2022. La compatibilité entre versions de hls4ml et Vivado/Vitis est documentée dans la matrice de compatibilité du framework — à vérifier avant l'installation.</p></div>
+  </div>
+
+  <div class="hurdle">
+    <h3>③ PYNQ-Z1 vs PYNQ-Z2 — Board non officiel</h3>
+    <p>HLS4ML et Conifer supportent officiellement le PYNQ-Z2, pas le PYNQ-Z1. Bien que les deux utilisent le même chip Zynq xc7z020clg400-1, les Board Definition Files (BDF) sont différents — ils définissent les contraintes de placement, les ports physiques, et les périphériques.</p>
+    <div class="box amber"><div class="box-t">Solution adoptée</div><p>Ajout manuel des fichiers Board Definition du PYNQ-Z1 dans les répertoires système des frameworks (Vivado et Conifer). Source : <code>https://discuss.pynq.io/t/addition-of-pynq-z1-board-into-vivado/3556</code>. Une fois les BDF ajoutés, le chip part='xc7z020clg400-1' est correctement reconnu pour la synthèse et l'implémentation.</p></div>
+  </div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('tableau')">← Tableau global</button>
+    <button class="nav-btn" onclick="go('fazit')">Suivant : Conclusion →</button>
+  </div>
+</section>
+
+<!-- ══ FAZIT ══ -->
+<section id="fazit" class="section">
+  <h2>Fazit & Ausblick</h2>
+  <p class="subtitle">Conclusion de la Projektarbeit 1 — FH Dortmund, Avril 2026</p>
+
+  <div class="box teal"><div class="box-t">Ce qu'on a prouvé</div><p>HLS4ML est un outil puissant pour l'inférence FPGA sans nécessiter de connaissances VHDL/Verilog. Par l'utilisation combinée de QKeras (quantisation 6-bit pendant l'entraînement), de pruning (75% de sparsité), et de ReuseFactor adapté, il est possible de <strong>réduire la consommation DSP de 999% (baseline) à 4% (déploiement)</strong> — une réduction de ×240 — avec une perte d'accuracy inférieure à 0.03%.</p></div>
+
+  <h3>Résultats clés</h3>
+  <div class="metrics">
+    <div class="metric bad"><div class="metric-val">999%</div><div class="metric-label">DSP baseline (Part 1)</div></div>
+    <div class="metric ok"><div class="metric-val">4.09%</div><div class="metric-label">DSP déploiement (Part 7)</div></div>
+    <div class="metric ok"><div class="metric-val">76.01%</div><div class="metric-label">Accuracy on-board</div></div>
+    <div class="metric ok"><div class="metric-val">412 000</div><div class="metric-label">Inférences/seconde</div></div>
+  </div>
+
+  <h3>Les défis principaux</h3>
+  <p>Les plus grandes difficultés n'étaient pas dans le framework lui-même mais dans la configuration de l'environnement logiciel et la gestion des incompatibilités de la chaîne Xilinx. Une fois résolus par recherche systématique et ajustement de la configuration, le workflow est reproductible.</p>
+
+  <h3>Ausblick — Perspectives futures</h3>
+  <div class="g2">
+    <div class="card purple">
+      <div class="card-title">CNNs plus optimisés</div>
+      <p>La Part 6 montre que les CNNs dépassent encore la capacité du PYNQ-Z1. Utiliser HGQ avec une meilleure calibration + RF plus élevé pourrait faire rentrer un CNN de classification d'images sur ce board.</p>
+    </div>
+    <div class="card blue">
+      <div class="card-title">End-to-End Deployment</div>
+      <p>Intégration complète d'un design hls4ml comme IP Block dans un Vivado Block Design avec code Python sur le board — pour des applications capteurs temps-réel.</p>
+    </div>
+    <div class="card teal">
+      <div class="card-title">Hardware-in-the-Loop</div>
+      <p>Validation avec données capteurs réelles en temps réel : détection d'anomalies ou classification d'images pour des applications industrielles de contrôle.</p>
+    </div>
+    <div class="card green">
+      <div class="card-title">Lien Rheinmetall</div>
+      <p>HLS4ML comme base pour des systèmes d'inférence temps-réel latency-critical sur véhicules — edge inference acceleration pour des systèmes embarqués Linux + FPGA.</p>
+    </div>
+  </div>
+
+  <div class="box purple"><div class="box-t">Référence — Projektarbeit 1</div><p>Simo Gueno Yvan Valder · Betreuer: Prof. Dr. Michael Karagounis · Fachhochschule Dortmund · April 2026<br>Repository : <code>https://github.com/yvsim001/hls4ml_tutorial</code></p></div>
+
+  <div class="page-nav">
+    <button class="nav-btn" onclick="go('hurden')">← Problèmes</button>
+    <button class="nav-btn" disabled>Fin du guide ✓</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+const navItems = document.querySelectorAll('.sb-item');
+function go(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  navItems.forEach(n=>n.classList.remove('active'));
+  const sec = document.getElementById(id);
+  if(sec) sec.classList.add('active');
+  navItems.forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active')});
+  window.scrollTo(0,0);
+}
+
+function calcRF(){
+  const rf = parseInt(document.getElementById('rf').value);
+  const muls = parseInt(document.getElementById('muls').value);
+  document.getElementById('rf-v').textContent = rf;
+  document.getElementById('mul-v').textContent = muls;
+  const dsps = Math.ceil(muls/rf);
+  const pct = Math.round(dsps/220*100);
+  document.getElementById('rf-dsp').textContent = dsps;
+  document.getElementById('rf-pct').textContent = pct+'%';
+  document.getElementById('rf-lat').textContent = rf+'×';
+  const v = document.getElementById('rf-verdict');
+  if(pct>100){
+    v.style.background='#FCEBEB';v.style.color='#A32D2D';
+    v.textContent='❌ '+pct+'% des 220 DSPs — ne rentre pas dans le PYNQ-Z1.';
+  } else if(pct>80){
+    v.style.background='#FAEEDA';v.style.color='#BA7517';
+    v.textContent='⚠ '+pct+'% des DSPs — limite de sécurité dépassée (80%). Routage difficile.';
+  } else {
+    v.style.background='#EAF3DE';v.style.color='#3B6D11';
+    v.textContent='✅ '+pct+'% des DSPs — configuration valide pour le PYNQ-Z1.';
+  }
+}
+calcRF();
+</script>
+</body>
+</html>
