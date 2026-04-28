@@ -49,7 +49,7 @@ Das Framework wurde ursprünglich für Echtzeit-Triggersysteme am **CERN Large H
 |---|---|
 | FPGA-Board | PYNQ-Z1 |
 | Synthesetool | Vivado / Vitis HLS |
-| Framework | hls4ml |
+| Framework | hls4ml 1.1.0|
 | ML-Backends | Keras, PyTorch, ONNX |
 | Betriebssystem | Ubuntu 24.04 |
 | Sprache | Python 3.x |
